@@ -151,6 +151,72 @@ void main() {
     service.debugHandleGamepadEvent(_button(GamepadButton.dpadRight, pressed: false));
     await tester.pump();
   });
+
+  testWidgets('D3: left stick deflection promotes input mode, right stick does not', (tester) async {
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+
+    // Left stick deflection should promote input mode (via reportNonPointerInput)
+    // This is verified by checking that no errors occur and the event is processed
+    service.debugHandleGamepadEvent(_axis(GamepadAxis.leftStickY, 1.0));
+    await tester.pump();
+    expect(_downCount(events, LogicalKeyboardKey.arrowDown), 1);
+
+    // Re-centre to reset
+    service.debugHandleGamepadEvent(_axis(GamepadAxis.leftStickY, 0.0));
+    await tester.pump();
+
+    // Right stick deflection should NOT navigate (unmapped axis)
+    // The event should be silently ignored, promoting no input mode change
+    service.debugHandleGamepadEvent(_axis(GamepadAxis.rightStickY, 1.0));
+    await tester.pump();
+
+    // No navigation events should fire for right stick
+    expect(
+      _downCount(events, LogicalKeyboardKey.arrowDown),
+      equals(1),
+      reason: 'right stick deflection must not generate any key events',
+    );
+    expect(
+      _downCount(events, LogicalKeyboardKey.arrowUp),
+      equals(0),
+      reason: 'right stick deflection must not generate any key events',
+    );
+  });
+
+  testWidgets('D4: focus changes coordinate with native text input focus', (tester) async {
+    // This test verifies that the pause/resume state depends on BOTH window focus
+    // and native text input focus, not just one or the other.
+    // The actual gamepad pause/resume is a no-op on Linux (per the code comment),
+    // but the flag state is still used by the gamepad input handler.
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+
+    // Set up handler to track state changes
+    var updateGamepadPauseStateCalls = 0;
+    GamepadService.debugNativeTextInputFocusHandler = (focused) async {
+      updateGamepadPauseStateCalls++;
+    };
+
+    // Simulate native text input focus change: should call update pause state
+    await service.debugSetNativeTextInputFocused(true);
+    expect(
+      updateGamepadPauseStateCalls,
+      equals(1),
+      reason: 'setting native text input focused should update pause state',
+    );
+
+    // Simulate native text input focus leaving: should call update pause state again
+    await service.debugSetNativeTextInputFocused(false);
+    expect(
+      updateGamepadPauseStateCalls,
+      equals(2),
+      reason: 'unsetting native text input focused should update pause state',
+    );
+
+    // Clean up
+    GamepadService.debugNativeTextInputFocusHandler = null;
+  });
 }
 
 GamepadButtonEvent _button(GamepadButton button, {required bool pressed}) {

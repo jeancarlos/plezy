@@ -248,6 +248,10 @@ class GamepadService with WindowListener {
   @visibleForTesting
   void debugHandleGamepadEvent(GamepadEvent event) => _handleGamepadEvent(event);
 
+  /// Calls [_setNativeTextInputFocused] for testing pause/resume coordination.
+  @visibleForTesting
+  Future<void> debugSetNativeTextInputFocused(bool focused) => _setNativeTextInputFocused(focused);
+
   key_sim.KeyEventSimulatorController get _simulator {
     return _keyEventSimulator ??= key_sim.KeyEventSimulatorController(
       deviceType: ui.KeyEventDeviceType.gamepad,
