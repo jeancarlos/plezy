@@ -52,9 +52,6 @@ class GamepadDuplicateInputGuard {
       LogicalKeyboardKey.gameButtonB,
     },
     LogicalKeyboardKey.gameButtonX: {LogicalKeyboardKey.gameButtonX, LogicalKeyboardKey.contextMenu},
-    LogicalKeyboardKey.mediaPlayPause: {LogicalKeyboardKey.mediaPlayPause},
-    LogicalKeyboardKey.mediaRewind: {LogicalKeyboardKey.mediaRewind},
-    LogicalKeyboardKey.mediaFastForward: {LogicalKeyboardKey.mediaFastForward},
   };
 
   static final Set<LogicalKeyboardKey> _trackedNativeKeys = _nativeAliasesBySyntheticKey.values
@@ -143,9 +140,6 @@ class GamepadService with WindowListener {
     GamepadButton.a: LogicalKeyboardKey.enter,
     GamepadButton.b: LogicalKeyboardKey.gameButtonB,
     GamepadButton.x: LogicalKeyboardKey.gameButtonX,
-    GamepadButton.leftTrigger: LogicalKeyboardKey.mediaRewind,
-    GamepadButton.rightTrigger: LogicalKeyboardKey.mediaFastForward,
-    GamepadButton.y: LogicalKeyboardKey.mediaPlayPause,
   };
 
   static const Map<GamepadButton, TraversalDirection> _directionByDpadButton = {
@@ -202,33 +196,6 @@ class GamepadService with WindowListener {
       previous ? handler.previous() : handler.next();
       return;
     }
-  }
-
-  /// Context registry for owner-scoped gamepad input handlers. Supports player
-  /// surface and global shortcuts; modal routes win via isActive.
-  static final Map<
-    Object,
-    ({
-      void Function(GamepadButton button)? onButton,
-      void Function(GamepadAxis axis, double value)? onAxis,
-      bool Function() isActive,
-    })
-  >
-  _gamepadContextHandlers = {};
-
-  /// Registers gamepad input handlers for a context (e.g., player surface).
-  /// Returns whether the button was handled by the active context.
-  static void registerGamepadContext(
-    Object owner, {
-    void Function(GamepadButton button)? onButton,
-    void Function(GamepadAxis axis, double value)? onAxis,
-    required bool Function() isActive,
-  }) {
-    _gamepadContextHandlers[owner] = (onButton: onButton, onAxis: onAxis, isActive: isActive);
-  }
-
-  static void unregisterGamepadContext(Object owner) {
-    _gamepadContextHandlers.remove(owner);
   }
 
   @visibleForTesting
@@ -517,21 +484,6 @@ class GamepadService with WindowListener {
             _logGamepadDiag('button simulates key down context/menu ${_describeGamepadButton(event)}');
           }
           _simulator.simulateKeyDown(LogicalKeyboardKey.gameButtonX);
-        case GamepadButton.y:
-          if (_isDesktop && TextInputDiagnostics.enabled) {
-            _logGamepadDiag('button simulates key down play/pause ${_describeGamepadButton(event)}');
-          }
-          if (_isDesktop) _simulator.simulateKeyDown(LogicalKeyboardKey.mediaPlayPause);
-        case GamepadButton.leftTrigger:
-          if (_isDesktop && TextInputDiagnostics.enabled) {
-            _logGamepadDiag('button simulates key down rewind ${_describeGamepadButton(event)}');
-          }
-          if (_isDesktop) _simulator.simulateKeyDown(LogicalKeyboardKey.mediaRewind);
-        case GamepadButton.rightTrigger:
-          if (_isDesktop && TextInputDiagnostics.enabled) {
-            _logGamepadDiag('button simulates key down fast forward ${_describeGamepadButton(event)}');
-          }
-          if (_isDesktop) _simulator.simulateKeyDown(LogicalKeyboardKey.mediaFastForward);
         // Immediate actions on press
         case GamepadButton.b:
           if (TextInputDiagnostics.enabled) {
@@ -575,21 +527,6 @@ class GamepadService with WindowListener {
             _logGamepadDiag('button simulates key up context/menu ${_describeGamepadButton(event)}');
           }
           _simulator.simulateKeyUp(LogicalKeyboardKey.gameButtonX);
-        case GamepadButton.y:
-          if (_isDesktop && TextInputDiagnostics.enabled) {
-            _logGamepadDiag('button simulates key up play/pause ${_describeGamepadButton(event)}');
-          }
-          if (_isDesktop) _simulator.simulateKeyUp(LogicalKeyboardKey.mediaPlayPause);
-        case GamepadButton.leftTrigger:
-          if (_isDesktop && TextInputDiagnostics.enabled) {
-            _logGamepadDiag('button simulates key up rewind ${_describeGamepadButton(event)}');
-          }
-          if (_isDesktop) _simulator.simulateKeyUp(LogicalKeyboardKey.mediaRewind);
-        case GamepadButton.rightTrigger:
-          if (_isDesktop && TextInputDiagnostics.enabled) {
-            _logGamepadDiag('button simulates key up fast forward ${_describeGamepadButton(event)}');
-          }
-          if (_isDesktop) _simulator.simulateKeyUp(LogicalKeyboardKey.mediaFastForward);
         default:
           break;
       }
