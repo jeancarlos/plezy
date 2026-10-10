@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:flutter/services.dart';
 
 import '../../focus/dpad_navigator.dart';
+import '../../focus/input_mode_tracker.dart';
 import '../../media/media_item.dart';
 import '../../media/stepped_seek.dart';
 import '../../mpv/mpv.dart';
@@ -14,10 +15,13 @@ import '../../services/fullscreen_state_manager.dart';
 import '../../services/live_seek_accumulator.dart';
 import '../../services/scrub_preview_source.dart';
 import '../../services/video_volume_controller.dart';
+import '../../services/settings_service.dart';
 import '../../utils/desktop_window_padding.dart';
 import '../../utils/platform_detector.dart';
 import '../../utils/formatters.dart';
 import '../../i18n/strings.g.dart';
+import '../settings_builder.dart';
+import '../controller_hints.dart';
 import '../../models/livetv_capture_buffer.dart';
 import 'models/track_controls_state.dart';
 import 'player_chrome_controller.dart';
@@ -941,6 +945,20 @@ class DesktopVideoControlsState extends State<DesktopVideoControls> {
                 ),
               ],
             ),
+          ),
+          SettingValueBuilder<bool>(
+            pref: SettingsService.showControllerButtonHints,
+            builder: (context, showHints, _) {
+              return ValueListenableBuilder<InputSource>(
+                valueListenable: InputModeTracker.sourceListenable,
+                builder: (context, inputSource, _) {
+                  if (showHints && inputSource == InputSource.gamepad) {
+                    return const PlayerControllerHints();
+                  }
+                  return const SizedBox.shrink();
+                },
+              );
+            },
           ),
         ],
       ),

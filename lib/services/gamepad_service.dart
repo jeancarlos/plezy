@@ -213,6 +213,10 @@ class GamepadService with WindowListener {
     _tabNavigationHandlers.clear();
   }
 
+  static bool hasActiveTabHandler() {
+    return _tabNavigationHandlers.values.any((handler) => handler.isActive());
+  }
+
   /// Context registry for owner-scoped gamepad input handlers (player surface, global shortcuts).
   /// Supports button and axis events; modal routes and overlay sheets win via isActive.
   /// Handlers return true if they consume the event, false to let it fall through.

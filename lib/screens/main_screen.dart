@@ -66,7 +66,9 @@ import '../widgets/mobile_navigation_rail.dart';
 import '../widgets/side_navigation_rail.dart';
 import '../focus/dpad_navigator.dart';
 import '../focus/key_event_utils.dart';
+import '../focus/input_mode_tracker.dart';
 import '../services/gamepad_service.dart';
+import '../widgets/controller_hints.dart';
 import 'discover_screen.dart';
 import 'explore_screen.dart';
 import 'libraries/library_quick_picker_sheet.dart';
@@ -1262,19 +1264,33 @@ class _MainScreenState extends State<MainScreen>
   /// IndexedStack that disables tickers for offscreen children to prevent
   /// animation controllers on non-visible tabs from scheduling frames.
   Widget _buildTickerAwareStack() {
-    return Column(
-      children: [
-        const AuthErrorBanner(),
-        Expanded(
-          child: IndexedStack(
-            index: _currentIndex,
-            clipBehavior: Clip.none,
-            children: [
-              for (var i = 0; i < _screens.length; i++) TickerMode(enabled: i == _currentIndex, child: _screens[i]),
-            ],
-          ),
-        ),
-      ],
+    return SettingValueBuilder<bool>(
+      pref: SettingsService.showControllerButtonHints,
+      builder: (context, showHints, _) {
+        return ValueListenableBuilder<InputSource>(
+          valueListenable: InputModeTracker.sourceListenable,
+          builder: (context, inputSource, _) {
+            final shouldShowHints = showHints && inputSource == InputSource.gamepad;
+
+            return Column(
+              children: [
+                const AuthErrorBanner(),
+                Expanded(
+                  child: IndexedStack(
+                    index: _currentIndex,
+                    clipBehavior: Clip.none,
+                    children: [
+                      for (var i = 0; i < _screens.length; i++)
+                        TickerMode(enabled: i == _currentIndex, child: _screens[i]),
+                    ],
+                  ),
+                ),
+                if (shouldShowHints) BrowseControllerHints(showTabs: GamepadService.hasActiveTabHandler()),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
