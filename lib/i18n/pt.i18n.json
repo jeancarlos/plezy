@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Personalizar atalhos de teclado",
     "videoPlayerNavigation": "Navegação do reprodutor de vídeo",
     "videoPlayerNavigationDescription": "Usar as teclas de seta para navegar pelos controles do reprodutor",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Servidor de retransmissão do Assistir Juntos",
     "watchTogetherRelayDescription": "Definir um servidor de retransmissão personalizado. Todos devem usar o mesmo servidor.",
     "watchTogetherRelayHint": "https://minha-retransmissao.exemplo.com.br",

@@ -106,6 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
   static const _kBackgroundDownloads = 'background_downloads';
   static const _kVideoPlayerControls = 'video_player_controls';
   static const _kVideoPlayerNavigation = 'video_player_navigation';
+  static const _kShowControllerButtonHints = 'show_controller_button_hints';
   static const _kCompanionRemoteServer = 'companion_remote_server';
   static const _kCrashReporting = 'crash_reporting';
   static const _kDebugLogging = 'debug_logging';
@@ -509,6 +510,13 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
           icon: Symbols.gamepad_rounded,
           title: t.settings.videoPlayerNavigation,
           subtitle: t.settings.videoPlayerNavigationDescription,
+        ),
+        SettingSwitchTile(
+          focusNode: _focusTracker.get(_kShowControllerButtonHints),
+          pref: settings.SettingsService.showControllerButtonHints,
+          icon: Symbols.sports_esports_rounded,
+          title: t.settings.showControllerButtonHints,
+          subtitle: t.settings.showControllerButtonHintsDescription,
         ),
       ],
       if (PlatformDetector.shouldActAsRemoteHost(context))

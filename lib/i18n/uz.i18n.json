@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Klaviatura tugmalarini moslashtiring",
     "videoPlayerNavigation": "Video pleyer navigatsiyasi",
     "videoPlayerNavigationDescription": "Pleyerni boshqarish uchun yoʻnalish tugmalaridan foydalaning",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Birgalikda tomosha relesi",
     "watchTogetherRelayDescription": "Xususiy rele oʻrnating. Barcha bir xil serverdan foydalanishi kerak.",
     "watchTogetherRelayHint": "https://my-relay.example.com",

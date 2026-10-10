@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Настроить горячие клавиши",
     "videoPlayerNavigation": "Навигация видеоплеера",
     "videoPlayerNavigationDescription": "Использовать клавиши стрелок для навигации по элементам управления плеером",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Сервер ретрансляции для совместного просмотра",
     "watchTogetherRelayDescription": "Задайте свой сервер ретрансляции. Все участники должны использовать один сервер.",
     "watchTogetherRelayHint": "https://my-relay.example.com",

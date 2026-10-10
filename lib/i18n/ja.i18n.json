@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "キーボードショートカットをカスタマイズ",
     "videoPlayerNavigation": "動画プレーヤーナビゲーション",
     "videoPlayerNavigationDescription": "矢印キーで動画プレーヤーコントロールを操作",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "一緒に視聴リレーサーバー",
     "watchTogetherRelayDescription": "カスタムリレーを設定します。全員が同じサーバーを使う必要があります。",
     "watchTogetherRelayHint": "https://my-relay.example.com",

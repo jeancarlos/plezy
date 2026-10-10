@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Pas de toetsenbordsneltoetsen aan",
     "videoPlayerNavigation": "Videospelernavigatie",
     "videoPlayerNavigationDescription": "Gebruik de pijltjestoetsen om door de videospelerbediening te navigeren",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Relay voor Samen kijken",
     "watchTogetherRelayDescription": "Stel een aangepaste relay in. Iedereen moet dezelfde server gebruiken.",
     "watchTogetherRelayHint": "https://mijn-relay.voorbeeld.nl",

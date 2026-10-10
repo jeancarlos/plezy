@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Tilpas tastaturgenveje",
     "videoPlayerNavigation": "Videoafspillernavigation",
     "videoPlayerNavigationDescription": "Brug piletaster til at navigere videoafspillerkontroller",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Relayserver til Se sammen",
     "watchTogetherRelayDescription": "Angiv en brugerdefineret relayserver. Alle skal bruge den samme server.",
     "watchTogetherRelayHint": "https://min-relay.eksempel.dk",

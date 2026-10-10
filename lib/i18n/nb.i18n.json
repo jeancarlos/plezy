@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Tilpass tastatursnarveier",
     "videoPlayerNavigation": "Videospillernavigering",
     "videoPlayerNavigationDescription": "Bruk piltaster for å navigere videospillerkontroller",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Reléserver for Se sammen",
     "watchTogetherRelayDescription": "Angi en egendefinert reléserver. Alle må bruke samme server.",
     "watchTogetherRelayHint": "https://min-relay.eksempel.no",

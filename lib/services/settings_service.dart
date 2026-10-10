@@ -899,6 +899,10 @@ class SettingsService extends BaseSharedPreferencesService {
     'enable_companion_remote_server',
     defaultValueProvider: PlatformDetector.isDesktopOS,
   );
+  static const showControllerButtonHints = BoolPref(
+    'show_controller_button_hints',
+    defaultValueProvider: PlatformDetector.isTV,
+  );
   static const startInFullscreen = BoolPref('start_in_fullscreen');
   static const exitFullscreenOnPlayerClose = BoolPref('exit_fullscreen_on_player_close');
 

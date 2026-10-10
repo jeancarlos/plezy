@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Klavye kısayollarını özelleştirin",
     "videoPlayerNavigation": "Video Oynatıcı Gezinmesi",
     "videoPlayerNavigationDescription": "Video oynatıcı kontrollerinde gezinmek için yön tuşlarını kullanın",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Birlikte İzle Aktarıcısı (Relay)",
     "watchTogetherRelayDescription": "Özel bir aktarıcı ayarlayın. Herkes aynı sunucuyu kullanmalıdır.",
     "watchTogetherRelayHint": "https://ornek-aktarici.com",

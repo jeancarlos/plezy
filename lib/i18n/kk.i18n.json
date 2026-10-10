@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Пернетақта пернелер тіркесін реттеу",
     "videoPlayerNavigation": "Видео ойнатқыш навигациясы",
     "videoPlayerNavigationDescription": "Ойнатқышты басқару үшін бағыттауыш пернелерді пайдалану",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Бірге көру релесі",
     "watchTogetherRelayDescription": "Жеке реле орнату. Барлығы бір серверді пайдалануы керек.",
     "watchTogetherRelayHint": "https://my-relay.example.com",

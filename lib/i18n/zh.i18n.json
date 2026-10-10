@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "自定义键盘快捷键",
     "videoPlayerNavigation": "视频播放器导航",
     "videoPlayerNavigationDescription": "使用方向键导航视频播放器控件",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "一起看中继服务器",
     "watchTogetherRelayDescription": "设置自定义中继。所有人必须使用同一服务器。",
     "watchTogetherRelayHint": "https://my-relay.example.com",

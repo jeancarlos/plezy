@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Personnaliser les raccourcis clavier",
     "videoPlayerNavigation": "Navigation dans le lecteur vidéo",
     "videoPlayerNavigationDescription": "Utiliser les touches fléchées pour parcourir les commandes du lecteur vidéo",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Relais pour Regarder ensemble",
     "watchTogetherRelayDescription": "Définir un relais personnalisé. Tous les participants doivent utiliser le même serveur.",
     "watchTogetherRelayHint": "https://mon-relais.exemple.fr",

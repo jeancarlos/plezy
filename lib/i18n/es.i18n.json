@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Personalizar los atajos de teclado",
     "videoPlayerNavigation": "Navegación del reproductor de video",
     "videoPlayerNavigationDescription": "Usar las teclas de flecha para navegar por los controles del reproductor",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Servidor de retransmisión de Ver juntos",
     "watchTogetherRelayDescription": "Configura un servidor de retransmisión personalizado. Todos deben usar el mismo servidor.",
     "watchTogetherRelayHint": "https://mi-relay.ejemplo.com",

@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Dostosuj skróty klawiszowe",
     "videoPlayerNavigation": "Nawigacja odtwarzacza wideo",
     "videoPlayerNavigationDescription": "Użyj klawiszy strzałek do nawigacji kontrolkami odtwarzacza",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Serwer pośredniczący funkcji „Oglądaj razem”",
     "watchTogetherRelayDescription": "Ustaw własny serwer pośredniczący. Wszyscy muszą korzystać z tego samego serwera.",
     "watchTogetherRelayHint": "https://moj-relay.przyklad.pl",

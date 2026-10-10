@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "키보드 단축키를 사용자 지정합니다",
     "videoPlayerNavigation": "비디오 플레이어 탐색",
     "videoPlayerNavigationDescription": "방향 키로 비디오 플레이어 컨트롤을 탐색합니다",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "함께 보기 릴레이",
     "watchTogetherRelayDescription": "사용자 지정 릴레이를 설정합니다. 모두 같은 서버를 사용해야 합니다.",
     "watchTogetherRelayHint": "https://my-relay.example.com",

@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Anpassa tangentbordsgenvägar",
     "videoPlayerNavigation": "Navigering i videospelaren",
     "videoPlayerNavigationDescription": "Använd piltangenter för att navigera videospelarens kontroller",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Reläserver för Titta tillsammans",
     "watchTogetherRelayDescription": "Ange en egen reläserver. Alla måste använda samma server.",
     "watchTogetherRelayHint": "https://mitt-rela.exempel.se",

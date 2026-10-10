@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Tastenkürzel anpassen",
     "videoPlayerNavigation": "Videoplayer-Navigation",
     "videoPlayerNavigationDescription": "Mit den Pfeiltasten durch die Videoplayer-Steuerung navigieren",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Relay für gemeinsames Schauen",
     "watchTogetherRelayDescription": "Eigenes Relay festlegen. Alle müssen denselben Server verwenden.",
     "watchTogetherRelayHint": "https://mein-relay.beispiel.de",

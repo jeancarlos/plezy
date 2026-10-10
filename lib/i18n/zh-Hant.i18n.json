@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "自訂鍵盤快速鍵",
     "videoPlayerNavigation": "影片播放器導覽",
     "videoPlayerNavigationDescription": "使用方向鍵導覽影片播放器控制項",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "一起看中繼伺服器",
     "watchTogetherRelayDescription": "設定自訂中繼。所有人必須使用相同的伺服器。",
     "watchTogetherRelayHint": "https://my-relay.example.com",

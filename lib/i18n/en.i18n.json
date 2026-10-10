@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Customize keyboard shortcuts",
     "videoPlayerNavigation": "Video Player Navigation",
     "videoPlayerNavigationDescription": "Use arrow keys to navigate video player controls",
+    "showControllerButtonHints": "Show Controller Button Hints",
+    "showControllerButtonHintsDescription": "Display button labels and glyphs for controller navigation",
     "watchTogetherRelay": "Watch Together Relay",
     "watchTogetherRelayDescription": "Set a custom relay. Everyone must use the same server.",
     "watchTogetherRelayHint": "https://my-relay.example.com",

@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Klaviatura qısayollarını özünüləşdirin",
     "videoPlayerNavigation": "Video oynadıcı naviqasiyası",
     "videoPlayerNavigationDescription": "Oynadıcı idarəetmələrində hərəkət etmək üçün ox düymələrini istifadə edin",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Birlikdə İzlə relesi",
     "watchTogetherRelayDescription": "Xüsusi rele təyin edin. Hər kəs eyni serveri istifadə etməlidir.",
     "watchTogetherRelayHint": "https://my-relay.example.com",

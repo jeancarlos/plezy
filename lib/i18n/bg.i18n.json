@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Настройване на клавишните комбинации",
     "videoPlayerNavigation": "Навигация във видео плейъра",
     "videoPlayerNavigationDescription": "Използвай стрелките за навигация в контролите на видео плейъра",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Релеен сървър за гледане заедно",
     "watchTogetherRelayDescription": "Задай собствен релеен сървър. Всички трябва да използват един и същ сървър.",
     "watchTogetherRelayHint": "https://my-relay.example.com",

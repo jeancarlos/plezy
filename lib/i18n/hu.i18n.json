@@ -235,6 +235,8 @@
     "keyboardShortcutsDescription": "Billentyűparancsok testreszabása",
     "videoPlayerNavigation": "Videólejátszó-navigáció",
     "videoPlayerNavigationDescription": "A nyílbillentyűk használata a videólejátszó vezérlői közötti navigáláshoz",
+    "showControllerButtonHints": "",
+    "showControllerButtonHintsDescription": "",
     "watchTogetherRelay": "Watch Together-relé",
     "watchTogetherRelayDescription": "Egyéni relé beállítása. Mindenkinek ugyanazt a szervert kell használnia.",
     "watchTogetherRelayHint": "https://my-relay.example.com",
