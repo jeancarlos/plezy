@@ -52,6 +52,11 @@ class GamepadDuplicateInputGuard {
       LogicalKeyboardKey.gameButtonB,
     },
     LogicalKeyboardKey.gameButtonX: {LogicalKeyboardKey.gameButtonX, LogicalKeyboardKey.contextMenu},
+    LogicalKeyboardKey.mediaPlayPause: {LogicalKeyboardKey.mediaPlayPause},
+    LogicalKeyboardKey.mediaRewind: {LogicalKeyboardKey.mediaRewind},
+    LogicalKeyboardKey.mediaFastForward: {LogicalKeyboardKey.mediaFastForward},
+    LogicalKeyboardKey.mediaTrackPrevious: {LogicalKeyboardKey.mediaTrackPrevious},
+    LogicalKeyboardKey.mediaTrackNext: {LogicalKeyboardKey.mediaTrackNext},
   };
 
   static final Set<LogicalKeyboardKey> _trackedNativeKeys = _nativeAliasesBySyntheticKey.values
@@ -206,6 +211,56 @@ class GamepadService with WindowListener {
   @visibleForTesting
   static void debugClearTabNavigationHandlers() {
     _tabNavigationHandlers.clear();
+  }
+
+  /// Context registry for owner-scoped gamepad input handlers (player surface, global shortcuts).
+  /// Supports button and axis events; modal routes and overlay sheets win via isActive.
+  static final Map<
+    Object,
+    ({
+      void Function(GamepadButton button)? onButton,
+      void Function(GamepadAxis axis, double value)? onAxis,
+      bool Function() isActive,
+    })
+  > _gamepadContextHandlers = {};
+
+  /// Registers owner-scoped gamepad input handlers for a context (e.g., player surface).
+  static void registerGamepadContext(
+    Object owner, {
+    void Function(GamepadButton button)? onButton,
+    void Function(GamepadAxis axis, double value)? onAxis,
+    required bool Function() isActive,
+  }) {
+    _gamepadContextHandlers[owner] = (onButton: onButton, onAxis: onAxis, isActive: isActive);
+  }
+
+  static void unregisterGamepadContext(Object owner) {
+    _gamepadContextHandlers.remove(owner);
+  }
+
+  /// Dispatches a button event to the active context handler, or returns false if no handler claims it.
+  static bool _dispatchContextButton(GamepadButton button) {
+    for (final handler in _gamepadContextHandlers.values) {
+      if (!handler.isActive()) continue;
+      handler.onButton?.call(button);
+      return true;
+    }
+    return false;
+  }
+
+  /// Dispatches an axis event to the active context handler, or returns false if no handler claims it.
+  static bool _dispatchContextAxis(GamepadAxis axis, double value) {
+    for (final handler in _gamepadContextHandlers.values) {
+      if (!handler.isActive()) continue;
+      handler.onAxis?.call(axis, value);
+      return true;
+    }
+    return false;
+  }
+
+  @visibleForTesting
+  static void debugClearGamepadContextHandlers() {
+    _gamepadContextHandlers.clear();
   }
 
   static const double _stickDeadzone = 0.5;
@@ -475,6 +530,11 @@ class GamepadService with WindowListener {
         return;
       }
 
+      // Try context dispatch first for buttons that have context handlers (desktop only)
+      if (_isDesktop && _dispatchContextButton(event.button)) {
+        return;
+      }
+
       switch (event.button) {
         // Face buttons — send KeyDown on press, KeyUp on release
         // so widget-level long-press timers work naturally
@@ -498,6 +558,12 @@ class GamepadService with WindowListener {
           _dispatchTabNavigation(previous: true);
         case GamepadButton.rightShoulder:
           _dispatchTabNavigation(previous: false);
+        case GamepadButton.y:
+          // Y without context: synthesize context menu key
+          if (TextInputDiagnostics.enabled) {
+            _logGamepadDiag('button simulates key down context menu via Y ${_describeGamepadButton(event)}');
+          }
+          _simulator.simulateKeyDown(LogicalKeyboardKey.contextMenu);
         default:
           break;
       }
@@ -531,6 +597,12 @@ class GamepadService with WindowListener {
             _logGamepadDiag('button simulates key up context/menu ${_describeGamepadButton(event)}');
           }
           _simulator.simulateKeyUp(LogicalKeyboardKey.gameButtonX);
+        case GamepadButton.y:
+          // Y release: send context menu key up
+          if (TextInputDiagnostics.enabled) {
+            _logGamepadDiag('button simulates key up context menu via Y ${_describeGamepadButton(event)}');
+          }
+          _simulator.simulateKeyUp(LogicalKeyboardKey.contextMenu);
         default:
           break;
       }
