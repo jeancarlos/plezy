@@ -222,7 +222,8 @@ class GamepadService with WindowListener {
       void Function(GamepadAxis axis, double value)? onAxis,
       bool Function() isActive,
     })
-  > _gamepadContextHandlers = {};
+  >
+  _gamepadContextHandlers = {};
 
   /// Registers owner-scoped gamepad input handlers for a context (e.g., player surface).
   static void registerGamepadContext(
