@@ -189,7 +189,7 @@ void main() {
     // and native text input focus, not just one or the other.
     // The actual gamepad pause/resume is a no-op on Linux (per the code comment),
     // but the flag state is still used by the gamepad input handler.
-    final events = await _pumpKeyEventRecorder(tester);
+    await _pumpKeyEventRecorder(tester);
     final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
 
     // Set up handler to track state changes
