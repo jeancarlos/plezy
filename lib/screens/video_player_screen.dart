@@ -48,7 +48,6 @@ import '../providers/playback_state_provider.dart';
 import '../providers/companion_remote_provider.dart';
 import '../services/fullscreen_state_manager.dart';
 import '../services/car_ux_restrictions_service.dart';
-import '../services/gamepad_service.dart';
 import '../services/driver_distraction.dart';
 import '../services/discord_rpc_service.dart';
 import '../services/trackers/tracker_coordinator.dart';

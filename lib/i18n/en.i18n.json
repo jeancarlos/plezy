@@ -99,6 +99,17 @@
       "folder": "Folder"
     }
   },
+  "controllerHints": {
+    "select": "Select",
+    "back": "Back",
+    "options": "Options",
+    "previousTab": "Previous Tab",
+    "nextTab": "Next Tab",
+    "playPause": "Play/Pause",
+    "audioSubs": "Audio/Subs",
+    "rewindSeek": "Seek Back",
+    "forwardSeek": "Seek Forward"
+  },
   "screens": {
     "licenses": "Licenses",
     "switchProfile": "Switch Profile",

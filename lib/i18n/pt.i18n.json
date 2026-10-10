@@ -100,15 +100,15 @@
     }
   },
   "controllerHints": {
-    "select": "",
-    "back": "",
-    "options": "",
-    "previousTab": "",
-    "nextTab": "",
-    "playPause": "",
-    "audioSubs": "",
-    "rewindSeek": "",
-    "forwardSeek": ""
+    "select": "Selecionar",
+    "back": "Voltar",
+    "options": "Opções",
+    "previousTab": "Aba Anterior",
+    "nextTab": "Próxima Aba",
+    "playPause": "Reproduzir/Pausar",
+    "audioSubs": "Áudio/Legendas",
+    "rewindSeek": "Retroceder",
+    "forwardSeek": "Avançar"
   },
   "screens": {
     "licenses": "Licenças",
