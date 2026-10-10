@@ -43,6 +43,7 @@ class Translations with BaseTranslations<AppLocale, Translations> {
 	late final Translations$app$en app = Translations$app$en.internal(_root);
 	late final Translations$auth$en auth = Translations$auth$en.internal(_root);
 	late final Translations$common$en common = Translations$common$en.internal(_root);
+	late final Translations$controllerHints$en controllerHints = Translations$controllerHints$en.internal(_root);
 	late final Translations$screens$en screens = Translations$screens$en.internal(_root);
 	late final Translations$update$en update = Translations$update$en.internal(_root);
 	late final Translations$settings$en settings = Translations$settings$en.internal(_root);
@@ -323,6 +324,42 @@ class Translations$common$en {
 	String get letterKeys => 'ABC';
 
 	late final Translations$common$mediaKind$en mediaKind = Translations$common$mediaKind$en.internal(_root);
+}
+
+// Path: controllerHints
+class Translations$controllerHints$en {
+	Translations$controllerHints$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Select'
+	String get select => 'Select';
+
+	/// en: 'Back'
+	String get back => 'Back';
+
+	/// en: 'Options'
+	String get options => 'Options';
+
+	/// en: 'Previous Tab'
+	String get previousTab => 'Previous Tab';
+
+	/// en: 'Next Tab'
+	String get nextTab => 'Next Tab';
+
+	/// en: 'Play/Pause'
+	String get playPause => 'Play/Pause';
+
+	/// en: 'Audio/Subs'
+	String get audioSubs => 'Audio/Subs';
+
+	/// en: 'Seek Back'
+	String get rewindSeek => 'Seek Back';
+
+	/// en: 'Seek Forward'
+	String get forwardSeek => 'Seek Forward';
 }
 
 // Path: screens
@@ -7473,6 +7510,15 @@ extension on Translations {
 			'common.mediaKind.clip' => 'Clip',
 			'common.mediaKind.photo' => 'Photo',
 			'common.mediaKind.folder' => 'Folder',
+			'controllerHints.select' => 'Select',
+			'controllerHints.back' => 'Back',
+			'controllerHints.options' => 'Options',
+			'controllerHints.previousTab' => 'Previous Tab',
+			'controllerHints.nextTab' => 'Next Tab',
+			'controllerHints.playPause' => 'Play/Pause',
+			'controllerHints.audioSubs' => 'Audio/Subs',
+			'controllerHints.rewindSeek' => 'Seek Back',
+			'controllerHints.forwardSeek' => 'Seek Forward',
 			'screens.licenses' => 'Licenses',
 			'screens.switchProfile' => 'Switch Profile',
 			'screens.subtitleStyling' => 'Subtitle Styling',
@@ -7886,6 +7932,8 @@ extension on Translations {
 			'fileInfo.colorSpace' => 'Color Space',
 			'fileInfo.colorRange' => 'Color Range',
 			'fileInfo.colorPrimaries' => 'Color Primaries',
+			_ => null,
+		} ?? switch (path) {
 			'fileInfo.colorTransfer' => 'Color Transfer',
 			'fileInfo.chromaSubsampling' => 'Chroma Subsampling',
 			'fileInfo.chromaLocation' => 'Chroma Location',
@@ -7895,8 +7943,6 @@ extension on Translations {
 			'fileInfo.referenceFrames' => 'Reference Frames',
 			'fileInfo.dynamicRange' => 'Dynamic Range',
 			'fileInfo.dolbyVision' => 'Dolby Vision',
-			_ => null,
-		} ?? switch (path) {
 			'fileInfo.dolbyVisionLevel' => 'Dolby Vision Level',
 			'fileInfo.dolbyVisionVersion' => 'Dolby Vision Version',
 			'fileInfo.dolbyVisionLayers' => 'Dolby Vision Layers',
@@ -8400,6 +8446,8 @@ extension on Translations {
 			'errors.connectionTimeout' => ({required Object context}) => 'Connection timeout while loading ${context}',
 			'errors.connectionFailed' => 'Unable to connect to media server',
 			'errors.unableToLoad' => ({required Object context}) => 'Unable to load ${context}. Please try again.',
+			_ => null,
+		} ?? switch (path) {
 			'errors.noClientAvailable' => 'No client available',
 			'errors.pleaseEnterToken' => 'Please enter a token',
 			'errors.invalidToken' => 'Invalid token',
@@ -8409,8 +8457,6 @@ extension on Translations {
 			'errors.failedToRate' => 'Couldn\'t update rating',
 			'errors.reasonTimedOut' => 'the connection timed out',
 			'errors.reasonUnreachable' => 'the server could not be reached',
-			_ => null,
-		} ?? switch (path) {
 			'errors.reasonRefused' => 'the server refused the request',
 			'errors.reasonNotFound' => 'the item is no longer on the server',
 			'errors.reasonServerError' => 'the server reported an error',
@@ -8914,6 +8960,8 @@ extension on Translations {
 			'watchTogether.anyoneControls' => 'Anyone controls',
 			'watchTogether.participants' => 'Participants',
 			'watchTogether.host' => 'Host',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.hostBadge' => 'HOST',
 			'watchTogether.youAreHost' => 'You are the host',
 			'watchTogether.makeHost' => 'Make host',
@@ -8923,8 +8971,6 @@ extension on Translations {
 			'watchTogether.hostChangedTo' => ({required Object name}) => '${name} is now the host',
 			'watchTogether.youAreNowHost' => 'You are now the host',
 			'watchTogether.hostTransferFailed' => ({required Object name}) => 'Couldn\'t make ${name} the host',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.watchingWithOthers' => 'Watching with others',
 			'watchTogether.endSession' => 'End Session',
 			'watchTogether.leaveSession' => 'Leave Session',
@@ -9428,6 +9474,8 @@ extension on Translations {
 			'services.title' => 'Services',
 			'services.hubSubtitle' => 'Sync watch progress and request new titles.',
 			'services.integrations' => 'Integrations',
+			_ => null,
+		} ?? switch (path) {
 			'services.notConnected' => 'Not connected',
 			'services.connectedAs' => ({required Object username}) => 'Connected as @${username}',
 			'services.scrobble' => 'Track progress automatically',
@@ -9437,8 +9485,6 @@ extension on Translations {
 			'services.connectFailed' => ({required Object service}) => 'Couldn\'t connect to ${service}. Try again.',
 			'services.names.mal' => 'MyAnimeList',
 			'services.names.anilist' => 'AniList',
-			_ => null,
-		} ?? switch (path) {
 			'services.names.simkl' => 'Simkl',
 			'services.names.seerr' => 'Seerr',
 			'services.names.mdblist' => 'MDBList',

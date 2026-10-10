@@ -42,6 +42,7 @@ class TranslationsPt extends Translations with BaseTranslations<AppLocale, Trans
 	@override late final _Translations$app$pt app = _Translations$app$pt._(_root);
 	@override late final _Translations$auth$pt auth = _Translations$auth$pt._(_root);
 	@override late final _Translations$common$pt common = _Translations$common$pt._(_root);
+	@override late final _Translations$controllerHints$pt controllerHints = _Translations$controllerHints$pt._(_root);
 	@override late final _Translations$screens$pt screens = _Translations$screens$pt._(_root);
 	@override late final _Translations$update$pt update = _Translations$update$pt._(_root);
 	@override late final _Translations$settings$pt settings = _Translations$settings$pt._(_root);
@@ -186,6 +187,24 @@ class _Translations$common$pt extends Translations$common$en {
 	@override String get url => 'URL';
 	@override String get letterKeys => 'ABC';
 	@override late final _Translations$common$mediaKind$pt mediaKind = _Translations$common$mediaKind$pt._(_root);
+}
+
+// Path: controllerHints
+class _Translations$controllerHints$pt extends Translations$controllerHints$en {
+	_Translations$controllerHints$pt._(TranslationsPt root) : this._root = root, super.internal(root);
+
+	final TranslationsPt _root; // ignore: unused_field
+
+	// Translations
+	@override String get select => 'Selecionar';
+	@override String get back => 'Voltar';
+	@override String get options => 'Opções';
+	@override String get previousTab => 'Aba Anterior';
+	@override String get nextTab => 'Próxima Aba';
+	@override String get playPause => 'Reproduzir/Pausar';
+	@override String get audioSubs => 'Áudio/Legendas';
+	@override String get rewindSeek => 'Retroceder';
+	@override String get forwardSeek => 'Avançar';
 }
 
 // Path: screens
@@ -3128,6 +3147,15 @@ extension on TranslationsPt {
 			'common.mediaKind.clip' => 'Clipe',
 			'common.mediaKind.photo' => 'Foto',
 			'common.mediaKind.folder' => 'Pasta',
+			'controllerHints.select' => 'Selecionar',
+			'controllerHints.back' => 'Voltar',
+			'controllerHints.options' => 'Opções',
+			'controllerHints.previousTab' => 'Aba Anterior',
+			'controllerHints.nextTab' => 'Próxima Aba',
+			'controllerHints.playPause' => 'Reproduzir/Pausar',
+			'controllerHints.audioSubs' => 'Áudio/Legendas',
+			'controllerHints.rewindSeek' => 'Retroceder',
+			'controllerHints.forwardSeek' => 'Avançar',
 			'screens.licenses' => 'Licenças',
 			'screens.switchProfile' => 'Trocar Perfil',
 			'screens.subtitleStyling' => 'Estilo de Legendas',
@@ -3541,6 +3569,8 @@ extension on TranslationsPt {
 			'fileInfo.dolbyVisionLevel' => 'Nível Dolby Vision',
 			'fileInfo.dolbyVisionVersion' => 'Versão Dolby Vision',
 			'fileInfo.dolbyVisionLayers' => 'Camadas Dolby Vision',
+			_ => null,
+		} ?? switch (path) {
 			'fileInfo.baseLayerCompatibility' => 'Compatibilidade da camada base',
 			'fileInfo.avcBitstream' => 'Bitstream AVC',
 			'fileInfo.nalLengthSize' => 'Tamanho do comprimento NAL',
@@ -3550,8 +3580,6 @@ extension on TranslationsPt {
 			'fileInfo.streamId' => 'ID do fluxo',
 			'fileInfo.language' => 'Idioma',
 			'fileInfo.languageCode' => 'Código do idioma',
-			_ => null,
-		} ?? switch (path) {
 			'fileInfo.streamTitle' => 'Título da faixa',
 			'fileInfo.channels' => 'Canais',
 			'fileInfo.sampleRate' => 'Taxa de amostragem',
@@ -4055,6 +4083,8 @@ extension on TranslationsPt {
 			'errors.reasonServerError' => 'o servidor relatou um erro',
 			'errors.reasonCancelled' => 'a solicitação foi cancelada',
 			'errors.reasonUnexpected' => 'ocorreu um erro inesperado',
+			_ => null,
+		} ?? switch (path) {
 			'libraries.title' => 'Bibliotecas',
 			'libraries.fallbackTitle' => 'Biblioteca',
 			'libraries.scanLibraryFiles' => 'Escanear Arquivos da Biblioteca',
@@ -4064,8 +4094,6 @@ extension on TranslationsPt {
 			'libraries.refreshMetadata' => 'Atualizar Metadados',
 			'libraries.emptyTrash' => 'Esvaziar Lixeira',
 			'libraries.emptyingTrash' => ({required Object title}) => 'Esvaziando lixeira de "${title}"...',
-			_ => null,
-		} ?? switch (path) {
 			'libraries.trashEmptied' => ({required Object title}) => 'Lixeira esvaziada de "${title}"',
 			'libraries.failedToEmptyTrash' => ({required Object error}) => 'Falha ao esvaziar lixeira: ${error}',
 			'libraries.analyzing' => ({required Object title}) => 'Analisando "${title}"...',
@@ -4569,6 +4597,8 @@ extension on TranslationsPt {
 			'watchTogether.participantResumed' => ({required Object name}) => '${name} retomou',
 			'watchTogether.participantSeeked' => ({required Object name}) => '${name} mudou a posição da reprodução',
 			'watchTogether.participantChangedSpeed' => ({required Object name, required Object speed}) => '${name} definiu a velocidade para ${speed}',
+			_ => null,
+		} ?? switch (path) {
 			'watchTogether.participantBuffering' => ({required Object name}) => '${name} está aguardando o carregamento',
 			'watchTogether.participantNeedsUpdate' => ({required Object name}) => '${name} está usando uma versão mais antiga do app — sincronização indisponível',
 			'watchTogether.resumingWithout' => ({required Object name}) => 'Retomando sem ${name}',
@@ -4578,8 +4608,6 @@ extension on TranslationsPt {
 			'watchTogether.renameRoom' => 'Renomear sala',
 			'watchTogether.removeRoom' => 'Remover',
 			'watchTogether.guestSwitchUnavailable' => 'Não foi possível trocar — servidor indisponível para sincronização',
-			_ => null,
-		} ?? switch (path) {
 			'watchTogether.guestSwitchFailed' => 'Não foi possível trocar — conteúdo não encontrado neste servidor',
 			'watchTogether.defaultDisplayName' => 'Usuário',
 			'watchTogether.errors.timedOut' => 'O servidor de retransmissão não respondeu a tempo',
@@ -5083,6 +5111,8 @@ extension on TranslationsPt {
 			'addServer.enterMediaBrowserUrlError' => ({required Object product}) => 'Digite a URL do seu servidor ${product}',
 			'addServer.addConnectionTitle' => 'Adicionar conexão',
 			'addServer.addConnectionTitleScoped' => ({required Object name}) => 'Adicionar a ${name}',
+			_ => null,
+		} ?? switch (path) {
 			'addServer.signInWithPlexCard' => 'Entrar com Plex',
 			'addServer.signInWithPlexCardSubtitle' => 'Autorize este dispositivo. Servidores compartilhados são adicionados.',
 			'addServer.signInWithPlexCardSubtitleScoped' => 'Autorize uma conta Plex. Os usuários do Plex Home se tornam perfis.',
@@ -5092,8 +5122,6 @@ extension on TranslationsPt {
 			'addServer.borrowFromAnotherProfile' => 'Pegar emprestado de outro perfil',
 			'addServer.borrowFromAnotherProfileSubtitle' => 'Reutilize a conexão de outro perfil. Perfis protegidos por PIN exigem PIN.',
 			'addServer.invalidCredentials' => 'Usuário ou senha inválidos',
-			_ => null,
-		} ?? switch (path) {
 			'addServer.authResponseNotJson' => 'A resposta de autenticação não era um JSON válido',
 			'addServer.authResponseIncomplete' => 'A resposta de login do servidor estava incompleta',
 			'addServer.quickConnectRejected' => 'O Quick Connect foi rejeitado pelo servidor',
