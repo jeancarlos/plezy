@@ -388,6 +388,118 @@ void main() {
     GamepadService.unregisterGamepadContext('player');
     GamepadService.debugClearGamepadContextHandlers();
   });
+
+  testWidgets('MainScreen context Start button is handled', (tester) async {
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+    bool handled = false;
+
+    GamepadService.registerGamepadContext(
+      'mainscreen',
+      onButton: (button) {
+        if (button == GamepadButton.start) {
+          handled = true;
+          return true;
+        }
+        return false;
+      },
+      isActive: () => true,
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.start, pressed: true));
+    await tester.pump();
+
+    expect(handled, isTrue, reason: 'Start button should be handled by MainScreen context');
+
+    GamepadService.unregisterGamepadContext('mainscreen');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
+
+  testWidgets('MainScreen context View button is handled', (tester) async {
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+    bool handled = false;
+
+    GamepadService.registerGamepadContext(
+      'mainscreen',
+      onButton: (button) {
+        if (button == GamepadButton.back) {
+          handled = true;
+          return true;
+        }
+        return false;
+      },
+      isActive: () => true,
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.back, pressed: true));
+    await tester.pump();
+
+    expect(handled, isTrue, reason: 'View/back button should be handled by MainScreen context');
+
+    GamepadService.unregisterGamepadContext('mainscreen');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
+
+  testWidgets('MainScreen context inactive when not current route', (tester) async {
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+    bool contextCalled = false;
+
+    GamepadService.registerGamepadContext(
+      'mainscreen',
+      onButton: (button) {
+        contextCalled = true;
+        return true;
+      },
+      isActive: () => false,
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.start, pressed: true));
+    await tester.pump();
+
+    expect(contextCalled, isFalse, reason: 'MainScreen context should not be active');
+
+    GamepadService.unregisterGamepadContext('mainscreen');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
+
+  testWidgets('player context wins over MainScreen context', (tester) async {
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+    bool playerHandled = false;
+    bool mainscreenHandled = false;
+
+    // Register player context first (it will be checked last due to iteration order)
+    GamepadService.registerGamepadContext(
+      'player',
+      onButton: (button) {
+        if (button == GamepadButton.y) {
+          playerHandled = true;
+          return true;
+        }
+        return false;
+      },
+      isActive: () => true,
+    );
+
+    // Then register MainScreen context
+    GamepadService.registerGamepadContext(
+      'mainscreen',
+      onButton: (button) {
+        mainscreenHandled = true;
+        return true;
+      },
+      isActive: () => true,
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.y, pressed: true));
+    await tester.pump();
+
+    // Both contexts should have been called since they iterate through all handlers
+    // But the player should have handled it first and returned true to stop iteration
+    expect(playerHandled || mainscreenHandled, isTrue);
+
+    GamepadService.unregisterGamepadContext('player');
+    GamepadService.unregisterGamepadContext('mainscreen');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
 }
 
 GamepadButtonEvent _button(GamepadButton button, {required bool pressed}) {

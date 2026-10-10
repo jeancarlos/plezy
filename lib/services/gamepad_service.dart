@@ -561,6 +561,9 @@ class GamepadService with WindowListener {
             _logGamepadDiag('button simulates key down context menu via Y ${_describeGamepadButton(event)}');
           }
           _simulator.simulateKeyDown(LogicalKeyboardKey.contextMenu);
+        case GamepadButton.guide:
+          // Guide button is explicitly ignored (Steam owns it)
+          break;
         default:
           break;
       }
@@ -604,6 +607,9 @@ class GamepadService with WindowListener {
             _logGamepadDiag('button simulates key up context menu via Y ${_describeGamepadButton(event)}');
           }
           _simulator.simulateKeyUp(LogicalKeyboardKey.contextMenu);
+        case GamepadButton.guide:
+          // Guide button is explicitly ignored (Steam owns it)
+          break;
         default:
           break;
       }

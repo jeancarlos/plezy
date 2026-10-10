@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
     show HardwareKeyboard, KeyDownEvent, KeyRepeatEvent, KeyUpEvent, LogicalKeyboardKey;
+import 'package:universal_gamepad/universal_gamepad.dart' show GamepadButton;
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
@@ -65,6 +66,7 @@ import '../widgets/mobile_navigation_rail.dart';
 import '../widgets/side_navigation_rail.dart';
 import '../focus/dpad_navigator.dart';
 import '../focus/key_event_utils.dart';
+import '../services/gamepad_service.dart';
 import 'discover_screen.dart';
 import 'explore_screen.dart';
 import 'libraries/library_quick_picker_sheet.dart';
@@ -526,6 +528,7 @@ class _MainScreenState extends State<MainScreen>
     if (PlatformDetector.isDesktopOS()) {
       windowManager.addListener(this);
       windowManager.setPreventClose(true);
+      GamepadService.registerGamepadContext(this, onButton: _handleGamepadButton, isActive: _isMainScreenContextActive);
     }
 
     // Synchronize _lastHasLiveTv with provider before building screens
@@ -1097,6 +1100,7 @@ class _MainScreenState extends State<MainScreen>
     WidgetsBinding.instance.removeObserver(this);
     _profileRouteObserver?.unsubscribe(this);
     if (PlatformDetector.isDesktopOS()) {
+      GamepadService.unregisterGamepadContext(this);
       windowManager.removeListener(this);
       windowManager.setPreventClose(false);
     }
@@ -1140,6 +1144,30 @@ class _MainScreenState extends State<MainScreen>
     }
 
     super.dispose();
+  }
+
+  bool _isMainScreenContextActive() {
+    if (!mounted) return false;
+    if (!(ModalRoute.isCurrentOf(context) ?? true)) return false;
+    if (OverlaySheetController.openSheetCount.value > 0) return false;
+    return true;
+  }
+
+  bool _handleGamepadButton(GamepadButton button) {
+    final tab = _mainScreenGamepadButtonToTab(button);
+    if (tab != null) {
+      _selectTab(tab);
+      return true;
+    }
+    return false;
+  }
+
+  static NavigationTabId? _mainScreenGamepadButtonToTab(GamepadButton button) {
+    return switch (button) {
+      GamepadButton.start => NavigationTabId.settings,
+      GamepadButton.back => NavigationTabId.search,
+      _ => null,
+    };
   }
 
   @override
