@@ -302,16 +302,27 @@ class GamepadService with WindowListener {
   void onWindowFocus() {
     _windowFocused = true;
     _duplicateInputGuard.clear();
-    Gamepad.instance.resume();
+    _updateGamepadPauseState();
   }
 
   @override
   void onWindowBlur() {
     _windowFocused = false;
     _releaseHeldInputState();
+    _updateGamepadPauseState();
+  }
 
-    // Release native device handles so other apps can use the gamepad.
-    Gamepad.instance.pause();
+  /// Updates pause/resume state based on both window focus and text input focus.
+  /// The gamepad should be paused if the window is not focused OR a native text
+  /// input field is focused. On Linux, pause/resume are no-ops but the flag is
+  /// still used by the gamepad handler.
+  void _updateGamepadPauseState() {
+    final shouldPause = !_windowFocused || _nativeTextInputFocused;
+    if (shouldPause) {
+      Gamepad.instance.pause();
+    } else {
+      Gamepad.instance.resume();
+    }
   }
 
   /// Stops direction repeat and clears every held button and stick latch.
@@ -377,17 +388,14 @@ class GamepadService with WindowListener {
     }
 
     try {
-      if (focused) {
-        if (TextInputDiagnostics.enabled) _logGamepadDiag('calling Gamepad.pause for native text input');
-        await Gamepad.instance.pause();
-        if (TextInputDiagnostics.enabled) _logGamepadDiag('Gamepad.pause completed for native text input');
-      } else {
-        if (TextInputDiagnostics.enabled) _logGamepadDiag('calling Gamepad.resume after native text input');
-        await Gamepad.instance.resume();
-        if (TextInputDiagnostics.enabled) _logGamepadDiag('Gamepad.resume completed after native text input');
+      _updateGamepadPauseState();
+      if (TextInputDiagnostics.enabled) {
+        _logGamepadDiag(
+          'setNativeTextInputFocused pause state updated: paused=${!_windowFocused || _nativeTextInputFocused}',
+        );
       }
     } catch (e) {
-      appLogger.e('GamepadService: Failed to ${focused ? "pause" : "resume"} for native text input', error: e);
+      appLogger.e('GamepadService: Failed to update pause state for native text input', error: e);
     }
   }
 
@@ -547,15 +555,14 @@ class GamepadService with WindowListener {
       return;
     }
 
-    // Promotion must fire on the same event that navigates: gating below the
-    // real deadzone would let analog-stick drift hide the desktop cursor.
-    if (event.value.abs() > _stickDeadzone) {
-      InputModeTracker.reportNonPointerInput();
-    }
-
     switch (event.axis) {
       // W3C: leftStickY -1.0 = up, 1.0 = down
       case GamepadAxis.leftStickY:
+        // Promotion must fire on the same event that navigates: gating below the
+        // real deadzone would let analog-stick drift hide the desktop cursor.
+        if (event.value.abs() > _stickDeadzone) {
+          InputModeTracker.reportNonPointerInput();
+        }
         _leftStickYLatch = _latchStickAxis(
           event.value,
           _leftStickYLatch,
@@ -564,6 +571,11 @@ class GamepadService with WindowListener {
           positive: TraversalDirection.down,
         );
       case GamepadAxis.leftStickX:
+        // Promotion must fire on the same event that navigates: gating below the
+        // real deadzone would let analog-stick drift hide the desktop cursor.
+        if (event.value.abs() > _stickDeadzone) {
+          InputModeTracker.reportNonPointerInput();
+        }
         _leftStickXLatch = _latchStickAxis(
           event.value,
           _leftStickXLatch,
@@ -572,6 +584,7 @@ class GamepadService with WindowListener {
           positive: TraversalDirection.right,
         );
       default:
+        // Unmapped axes (e.g., right stick) are ignored; do not promote input mode.
         break;
     }
   }
