@@ -19,6 +19,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:rate_limiter/rate_limiter.dart';
 import 'package:flutter/services.dart'
     show LogicalKeyboardKey, PhysicalKeyboardKey, KeyEvent, KeyDownEvent, KeyUpEvent, KeyRepeatEvent, HardwareKeyboard;
+import 'package:universal_gamepad/universal_gamepad.dart' show GamepadButton;
 import '../../services/fullscreen_state_manager.dart';
 import '../../services/macos_window_service.dart';
 import '../../services/pip_service.dart';
@@ -33,6 +34,7 @@ import '../overlay_sheet.dart';
 import '../../focus/dpad_navigator.dart';
 import '../../focus/focus_navigation_intent.dart';
 import '../../focus/transport_keys.dart';
+import '../../services/gamepad_service.dart';
 
 import '../../database/app_database.dart';
 import '../../media/media_backend.dart';
@@ -66,6 +68,7 @@ import '../../utils/latest_async_write.dart';
 import 'icons.dart';
 import 'player_chrome_controller.dart';
 import 'playback_extras_loader.dart';
+import 'sheets/track_sheet.dart';
 import 'widgets/player_toast_indicator.dart';
 import 'widgets/transport_feedback_indicator.dart';
 import '../../utils/app_logger.dart';
@@ -1001,6 +1004,12 @@ class _PlexVideoControlsState extends State<PlexVideoControls>
     // removeListener never matches.
     final hasFirstFrame = widget.hasFirstFrame;
     if (hasFirstFrame != null) bindListenable(hasFirstFrame, _onFirstFrameReady);
+    // Register gamepad context for player-level controller input (desktop only)
+    if (PlatformDetector.isDesktopOS()) {
+      GamepadService.registerGamepadContext(this, onButton: _handleGamepadButton, isActive: _isPlayerContextActive);
+      ownDisposer(() => GamepadService.unregisterGamepadContext(this));
+    }
+
     // Defer context-dependent initialization to after first build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -1130,6 +1139,77 @@ class _PlexVideoControlsState extends State<PlexVideoControls>
       unawaited(MacOSWindowService.setTrafficLightsVisible(true));
     }
     super.dispose();
+  }
+
+  /// Returns true if the player context should accept gamepad input. The context
+  /// is active only when the player surface is visible and no modal route or
+  /// overlay sheet is on top.
+  bool _isPlayerContextActive() {
+    if (!mounted) return false;
+    // Check if this screen is still the current route (not buried under a modal)
+    if (!(ModalRoute.isCurrentOf(context) ?? true)) return false;
+    // Check if an overlay sheet is open
+    if (OverlaySheetController.openSheetCount.value > 0) return false;
+    return true;
+  }
+
+  /// Handles gamepad button events when the player context is active.
+  /// Returns true if the button was handled, false to let it fall through to default behavior.
+  bool _handleGamepadButton(GamepadButton button) {
+    // Handle only buttons specific to player context; fall through for others
+    switch (button) {
+      case GamepadButton.x:
+        // X → toggle playback
+        unawaited(widget.player.playOrPause());
+        return true;
+      case GamepadButton.y:
+        // Y → open TrackSheet for audio/subtitle/quality selection
+        _openTrackSheet();
+        return true;
+      case GamepadButton.leftShoulder:
+        // LB → previous track/chapter
+        if (widget.canControl) {
+          _seekToChapterWithFeedback(forward: false);
+        }
+        return true;
+      case GamepadButton.rightShoulder:
+        // RB → next track/chapter
+        if (widget.canControl) {
+          _seekToChapterWithFeedback(forward: true);
+        }
+        return true;
+      case GamepadButton.leftTrigger:
+        // LT → rewind by configured step
+        if (widget.canControl) {
+          _seekByWithFeedback(Duration(seconds: -_seekTimeSmall));
+        }
+        return true;
+      case GamepadButton.rightTrigger:
+        // RT → fast forward by configured step
+        if (widget.canControl) {
+          _seekByWithFeedback(Duration(seconds: _seekTimeSmall));
+        }
+        return true;
+      default:
+        // Let other buttons fall through to default behavior
+        return false;
+    }
+  }
+
+  /// Opens the track selection sheet (audio, subtitle, quality).
+  void _openTrackSheet() {
+    widget.chromeController.cancelAutoHide();
+    final ctx = this.context;
+    final playbackState = ctx.read<PlaybackStateProvider>();
+    final trackControlsState = _buildTrackControlsState(
+      playbackState: playbackState,
+      onToggleAlwaysOnTop: _toggleAlwaysOnTop,
+    );
+    OverlaySheetController.of(ctx)
+        .show(
+          builder: (_) => TrackSheet(player: widget.player, trackControlsState: trackControlsState),
+        )
+        .whenComplete(() => _startHideTimer());
   }
 
   /// [FullscreenStateManager] is the single source of desktop fullscreen truth

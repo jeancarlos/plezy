@@ -215,21 +215,23 @@ class GamepadService with WindowListener {
 
   /// Context registry for owner-scoped gamepad input handlers (player surface, global shortcuts).
   /// Supports button and axis events; modal routes and overlay sheets win via isActive.
+  /// Handlers return true if they consume the event, false to let it fall through.
   static final Map<
     Object,
     ({
-      void Function(GamepadButton button)? onButton,
-      void Function(GamepadAxis axis, double value)? onAxis,
+      bool Function(GamepadButton button)? onButton,
+      bool Function(GamepadAxis axis, double value)? onAxis,
       bool Function() isActive,
     })
   >
   _gamepadContextHandlers = {};
 
   /// Registers owner-scoped gamepad input handlers for a context (e.g., player surface).
+  /// The onButton and onAxis callbacks return true if the event is handled, false otherwise.
   static void registerGamepadContext(
     Object owner, {
-    void Function(GamepadButton button)? onButton,
-    void Function(GamepadAxis axis, double value)? onAxis,
+    bool Function(GamepadButton button)? onButton,
+    bool Function(GamepadAxis axis, double value)? onAxis,
     required bool Function() isActive,
   }) {
     _gamepadContextHandlers[owner] = (onButton: onButton, onAxis: onAxis, isActive: isActive);
@@ -243,8 +245,20 @@ class GamepadService with WindowListener {
   static bool _dispatchContextButton(GamepadButton button) {
     for (final handler in _gamepadContextHandlers.values) {
       if (!handler.isActive()) continue;
-      handler.onButton?.call(button);
-      return true;
+      if (handler.onButton?.call(button) ?? false) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Dispatches an axis event to the active context handler, or returns false if no handler claims it.
+  static bool _dispatchContextAxis(GamepadAxis axis, double value) {
+    for (final handler in _gamepadContextHandlers.values) {
+      if (!handler.isActive()) continue;
+      if (handler.onAxis?.call(axis, value) ?? false) {
+        return true;
+      }
     }
     return false;
   }

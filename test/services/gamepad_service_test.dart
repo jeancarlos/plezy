@@ -217,6 +217,83 @@ void main() {
     // Clean up
     GamepadService.debugNativeTextInputFocusHandler = null;
   });
+
+  testWidgets('player context handles X button and returns true', (tester) async {
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+
+    bool contextHandledX = false;
+    GamepadService.registerGamepadContext(
+      'player',
+      onButton: (button) {
+        if (button == GamepadButton.x) {
+          contextHandledX = true;
+          return true;
+        }
+        return false;
+      },
+      isActive: () => true,
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.x, pressed: true));
+    await tester.pump();
+
+    expect(contextHandledX, isTrue, reason: 'X button should be handled by context');
+    // X should not fall through to the default handler
+    expect(_downCount(events, LogicalKeyboardKey.gameButtonX), 0);
+
+    GamepadService.unregisterGamepadContext('player');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
+
+  testWidgets('player context inactive lets buttons fall through', (tester) async {
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+
+    bool contextCalled = false;
+    GamepadService.registerGamepadContext(
+      'player',
+      onButton: (button) {
+        contextCalled = true;
+        return true;
+      },
+      isActive: () => false, // Context is inactive
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.y, pressed: true));
+    await tester.pump();
+
+    // Context should not be called when inactive
+    expect(contextCalled, isFalse);
+    // Y should fall through to default handler
+    expect(_downCount(events, LogicalKeyboardKey.contextMenu), 1);
+
+    GamepadService.unregisterGamepadContext('player');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
+
+  testWidgets('player context unhandled button falls through', (tester) async {
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+
+    GamepadService.registerGamepadContext(
+      'player',
+      onButton: (button) {
+        // Only handle X, let Y fall through
+        return button == GamepadButton.x;
+      },
+      isActive: () => true,
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.y, pressed: true));
+    await tester.pump();
+
+    // Y should fall through to default handler
+    expect(_downCount(events, LogicalKeyboardKey.contextMenu), 1);
+
+    GamepadService.unregisterGamepadContext('player');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
 }
 
 GamepadButtonEvent _button(GamepadButton button, {required bool pressed}) {
