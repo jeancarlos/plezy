@@ -99,6 +99,17 @@
       "folder": "Pasta"
     }
   },
+  "controllerHints": {
+    "select": "",
+    "back": "",
+    "options": "",
+    "previousTab": "",
+    "nextTab": "",
+    "playPause": "",
+    "audioSubs": "",
+    "rewindSeek": "",
+    "forwardSeek": ""
+  },
   "screens": {
     "licenses": "Licenças",
     "switchProfile": "Trocar Perfil",

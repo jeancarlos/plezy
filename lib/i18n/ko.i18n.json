@@ -99,6 +99,17 @@
       "folder": "폴더"
     }
   },
+  "controllerHints": {
+    "select": "",
+    "back": "",
+    "options": "",
+    "previousTab": "",
+    "nextTab": "",
+    "playPause": "",
+    "audioSubs": "",
+    "rewindSeek": "",
+    "forwardSeek": ""
+  },
   "screens": {
     "licenses": "라이선스",
     "switchProfile": "프로필 전환",

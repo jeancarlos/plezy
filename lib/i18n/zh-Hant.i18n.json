@@ -99,6 +99,17 @@
       "folder": "資料夾"
     }
   },
+  "controllerHints": {
+    "select": "",
+    "back": "",
+    "options": "",
+    "previousTab": "",
+    "nextTab": "",
+    "playPause": "",
+    "audioSubs": "",
+    "rewindSeek": "",
+    "forwardSeek": ""
+  },
   "screens": {
     "licenses": "授權條款",
     "switchProfile": "切換使用者",

@@ -99,6 +99,17 @@
       "folder": "Ordner"
     }
   },
+  "controllerHints": {
+    "select": "",
+    "back": "",
+    "options": "",
+    "previousTab": "",
+    "nextTab": "",
+    "playPause": "",
+    "audioSubs": "",
+    "rewindSeek": "",
+    "forwardSeek": ""
+  },
   "screens": {
     "licenses": "Lizenzen",
     "switchProfile": "Profil wechseln",
