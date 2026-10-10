@@ -519,12 +519,14 @@ class GamepadService with WindowListener {
         if (TextInputDiagnostics.enabled) {
           _logGamepadDiag('button starts direction repeat ${direction.name} ${_describeGamepadButton(event)}');
         }
+        InputModeTracker.reportGamepadInput();
         _startDirectionRepeat(direction, event.button);
         return;
       }
 
       // Try context dispatch first for buttons that have context handlers (desktop only)
       if (_isDesktop && _dispatchContextButton(event.button)) {
+        InputModeTracker.reportGamepadInput();
         _contextConsumedButtons.add(event.button);
         if (event.button == GamepadButton.leftTrigger || event.button == GamepadButton.rightTrigger) {
           _startTriggerRepeat(event.button);
@@ -539,27 +541,33 @@ class GamepadService with WindowListener {
           if (TextInputDiagnostics.enabled) {
             _logGamepadDiag('button simulates key down enter ${_describeGamepadButton(event)}');
           }
+          InputModeTracker.reportGamepadInput();
           _simulator.simulateKeyDown(LogicalKeyboardKey.enter);
         case GamepadButton.x:
           if (TextInputDiagnostics.enabled) {
             _logGamepadDiag('button simulates key down context/menu ${_describeGamepadButton(event)}');
           }
+          InputModeTracker.reportGamepadInput();
           _simulator.simulateKeyDown(LogicalKeyboardKey.gameButtonX);
         // Immediate actions on press
         case GamepadButton.b:
           if (TextInputDiagnostics.enabled) {
             _logGamepadDiag('button simulates key press back ${_describeGamepadButton(event)}');
           }
+          InputModeTracker.reportGamepadInput();
           _simulator.simulateKeyPress(LogicalKeyboardKey.gameButtonB);
         case GamepadButton.leftShoulder:
+          InputModeTracker.reportGamepadInput();
           _dispatchTabNavigation(previous: true);
         case GamepadButton.rightShoulder:
+          InputModeTracker.reportGamepadInput();
           _dispatchTabNavigation(previous: false);
         case GamepadButton.y:
           // Y without context: synthesize context menu key
           if (TextInputDiagnostics.enabled) {
             _logGamepadDiag('button simulates key down context menu via Y ${_describeGamepadButton(event)}');
           }
+          InputModeTracker.reportGamepadInput();
           _simulator.simulateKeyDown(LogicalKeyboardKey.contextMenu);
         case GamepadButton.guide:
           // Guide button is explicitly ignored (Steam owns it)
@@ -645,6 +653,7 @@ class GamepadService with WindowListener {
         // real deadzone would let analog-stick drift hide the desktop cursor.
         if (event.value.abs() > _stickDeadzone) {
           InputModeTracker.reportNonPointerInput();
+          InputModeTracker.reportGamepadInput();
         }
         _leftStickYLatch = _latchStickAxis(
           event.value,
@@ -658,6 +667,7 @@ class GamepadService with WindowListener {
         // real deadzone would let analog-stick drift hide the desktop cursor.
         if (event.value.abs() > _stickDeadzone) {
           InputModeTracker.reportNonPointerInput();
+          InputModeTracker.reportGamepadInput();
         }
         _leftStickXLatch = _latchStickAxis(
           event.value,
