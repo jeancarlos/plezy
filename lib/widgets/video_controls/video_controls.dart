@@ -1153,45 +1153,37 @@ class _PlexVideoControlsState extends State<PlexVideoControls>
     return true;
   }
 
-  /// Handles gamepad button events when the player context is active.
-  /// Returns true if the button was handled, false to let it fall through to default behavior.
   bool _handleGamepadButton(GamepadButton button) {
-    // Handle only buttons specific to player context; fall through for others
     switch (button) {
       case GamepadButton.x:
-        // X → toggle playback
-        unawaited(widget.player.playOrPause());
+        if (widget.canControl) {
+          unawaited(_playOrPause());
+        }
         return true;
       case GamepadButton.y:
-        // Y → open TrackSheet for audio/subtitle/quality selection
         _openTrackSheet();
         return true;
       case GamepadButton.leftShoulder:
-        // LB → previous track/chapter
         if (widget.canControl) {
           _seekToChapterWithFeedback(forward: false);
         }
         return true;
       case GamepadButton.rightShoulder:
-        // RB → next track/chapter
         if (widget.canControl) {
           _seekToChapterWithFeedback(forward: true);
         }
         return true;
       case GamepadButton.leftTrigger:
-        // LT → rewind by configured step
         if (widget.canControl) {
           _seekByWithFeedback(Duration(seconds: -_seekTimeSmall));
         }
         return true;
       case GamepadButton.rightTrigger:
-        // RT → fast forward by configured step
         if (widget.canControl) {
           _seekByWithFeedback(Duration(seconds: _seekTimeSmall));
         }
         return true;
       default:
-        // Let other buttons fall through to default behavior
         return false;
     }
   }
@@ -1199,7 +1191,7 @@ class _PlexVideoControlsState extends State<PlexVideoControls>
   /// Opens the track selection sheet (audio, subtitle, quality).
   void _openTrackSheet() {
     widget.chromeController.cancelAutoHide();
-    final ctx = this.context;
+    final ctx = context;
     final playbackState = ctx.read<PlaybackStateProvider>();
     final trackControlsState = _buildTrackControlsState(
       playbackState: playbackState,

@@ -216,14 +216,7 @@ class GamepadService with WindowListener {
   /// Context registry for owner-scoped gamepad input handlers (player surface, global shortcuts).
   /// Supports button and axis events; modal routes and overlay sheets win via isActive.
   /// Handlers return true if they consume the event, false to let it fall through.
-  static final Map<
-    Object,
-    ({
-      bool Function(GamepadButton button)? onButton,
-      bool Function(GamepadAxis axis, double value)? onAxis,
-      bool Function() isActive,
-    })
-  >
+  static final Map<Object, ({bool Function(GamepadButton button)? onButton, bool Function() isActive})>
   _gamepadContextHandlers = {};
 
   /// Registers owner-scoped gamepad input handlers for a context (e.g., player surface).
@@ -231,10 +224,9 @@ class GamepadService with WindowListener {
   static void registerGamepadContext(
     Object owner, {
     bool Function(GamepadButton button)? onButton,
-    bool Function(GamepadAxis axis, double value)? onAxis,
     required bool Function() isActive,
   }) {
-    _gamepadContextHandlers[owner] = (onButton: onButton, onAxis: onAxis, isActive: isActive);
+    _gamepadContextHandlers[owner] = (onButton: onButton, isActive: isActive);
   }
 
   static void unregisterGamepadContext(Object owner) {
@@ -246,17 +238,6 @@ class GamepadService with WindowListener {
     for (final handler in _gamepadContextHandlers.values) {
       if (!handler.isActive()) continue;
       if (handler.onButton?.call(button) ?? false) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /// Dispatches an axis event to the active context handler, or returns false if no handler claims it.
-  static bool _dispatchContextAxis(GamepadAxis axis, double value) {
-    for (final handler in _gamepadContextHandlers.values) {
-      if (!handler.isActive()) continue;
-      if (handler.onAxis?.call(axis, value) ?? false) {
         return true;
       }
     }
@@ -285,6 +266,10 @@ class GamepadService with WindowListener {
 
   final Set<GamepadButton> _pressedButtons = {};
   final Set<GamepadButton> _suppressedButtons = {};
+  final Set<GamepadButton> _contextConsumedButtons = {};
+  Timer? _triggerRepeatTimer;
+  GamepadButton? _triggerRepeatButton;
+  Object? _triggerRepeatOwner;
   bool _windowFocused = true;
   bool _nativeKeyHandlerRegistered = false;
   bool _nativeTextInputFocused = false;
@@ -404,6 +389,7 @@ class GamepadService with WindowListener {
     ]);
     _pressedButtons.clear();
     _suppressedButtons.clear();
+    _contextConsumedButtons.clear();
     _duplicateInputGuard.clear();
 
     // Reset analog stick state so re-focus doesn't inherit stale direction
@@ -436,8 +422,10 @@ class GamepadService with WindowListener {
         _logGamepadDiag('native text input focused; clearing repeat/buttons/duplicate guard before pause');
       }
       _stopDirectionRepeat(force: true);
+      _stopTriggerRepeat(force: true);
       _pressedButtons.clear();
       _suppressedButtons.clear();
+      _contextConsumedButtons.clear();
       _keyEventSimulator?.clearHeldKeys();
       _duplicateInputGuard.clear();
     }
@@ -537,6 +525,10 @@ class GamepadService with WindowListener {
 
       // Try context dispatch first for buttons that have context handlers (desktop only)
       if (_isDesktop && _dispatchContextButton(event.button)) {
+        _contextConsumedButtons.add(event.button);
+        if (event.button == GamepadButton.leftTrigger || event.button == GamepadButton.rightTrigger) {
+          _startTriggerRepeat(event.button);
+        }
         return;
       }
 
@@ -580,8 +572,12 @@ class GamepadService with WindowListener {
         }
         return;
       }
-
-      // D-pad release — stop repeat if this button owns it
+      if (_contextConsumedButtons.remove(event.button)) {
+        if (event.button == GamepadButton.leftTrigger || event.button == GamepadButton.rightTrigger) {
+          _stopTriggerRepeat(owner: event.button);
+        }
+        return;
+      }
       switch (event.button) {
         case GamepadButton.dpadUp:
         case GamepadButton.dpadDown:
@@ -698,6 +694,39 @@ class GamepadService with WindowListener {
       _keyEventSimulator?.stopKeyRepeat();
       _repeatOwner = null;
     }
+  }
+
+  void _startTriggerRepeat(GamepadButton button) {
+    _stopTriggerRepeat(force: true);
+    _triggerRepeatButton = button;
+    _triggerRepeatOwner = button;
+    _triggerRepeatTimer = Timer(_repeatInitialDelay, () {
+      _triggerRepeatTimer = Timer.periodic(_repeatInterval, (_) {
+        _onTriggerRepeatTick();
+      });
+    });
+  }
+
+  void _stopTriggerRepeat({Object? owner, bool force = false}) {
+    if (force || owner == null || owner == _triggerRepeatOwner) {
+      _triggerRepeatTimer?.cancel();
+      _triggerRepeatTimer = null;
+      _triggerRepeatButton = null;
+      _triggerRepeatOwner = null;
+    }
+  }
+
+  void _onTriggerRepeatTick() {
+    final button = _triggerRepeatButton;
+    if (button == null) return;
+
+    for (final handler in _gamepadContextHandlers.values) {
+      if (!handler.isActive()) continue;
+      handler.onButton?.call(button);
+      return;
+    }
+    // Context became inactive or unregistered, stop repeat
+    _stopTriggerRepeat(force: true);
   }
 
   /// Latches one stick axis to the direction it is deflected past the

@@ -294,6 +294,100 @@ void main() {
     GamepadService.unregisterGamepadContext('player');
     GamepadService.debugClearGamepadContextHandlers();
   });
+
+  testWidgets('context-consumed button release is swallowed', (tester) async {
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+    GamepadService.registerGamepadContext(
+      'player',
+      onButton: (button) {
+        return button == GamepadButton.x;
+      },
+      isActive: () => true,
+    );
+    service.debugHandleGamepadEvent(_button(GamepadButton.x, pressed: true));
+    await tester.pump();
+    expect(_downCount(events, LogicalKeyboardKey.gameButtonX), 0);
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.x, pressed: false));
+    await tester.pump();
+    expect(_upCount(events, LogicalKeyboardKey.gameButtonX), 0);
+
+    GamepadService.unregisterGamepadContext('player');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
+
+  testWidgets('trigger hold-to-repeat invokes handler', (tester) async {
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+    int callCount = 0;
+    GamepadService.registerGamepadContext(
+      'player',
+      onButton: (button) {
+        if (button == GamepadButton.leftTrigger) {
+          callCount++;
+          return true;
+        }
+        return false;
+      },
+      isActive: () => true,
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.leftTrigger, pressed: true));
+    await tester.pump();
+    expect(callCount, 1);
+
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 80));
+    await tester.pump();
+    expect(callCount, greaterThan(1));
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.leftTrigger, pressed: false));
+    await tester.pump();
+    final finalCount = callCount;
+
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump();
+    expect(callCount, finalCount);
+
+    GamepadService.unregisterGamepadContext('player');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
+
+  testWidgets('trigger repeat stops when context becomes inactive', (tester) async {
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+    bool isActive = true;
+    int callCount = 0;
+
+    GamepadService.registerGamepadContext(
+      'player',
+      onButton: (button) {
+        if (button == GamepadButton.rightTrigger) {
+          callCount++;
+          return true;
+        }
+        return false;
+      },
+      isActive: () => isActive,
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.rightTrigger, pressed: true));
+    await tester.pump();
+    expect(callCount, 1);
+
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 80));
+    await tester.pump();
+    final countAfterFirstRepeat = callCount;
+    expect(countAfterFirstRepeat, greaterThan(1));
+
+    isActive = false;
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.pump();
+    expect(callCount, countAfterFirstRepeat);
+
+    GamepadService.unregisterGamepadContext('player');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
 }
 
 GamepadButtonEvent _button(GamepadButton button, {required bool pressed}) {
