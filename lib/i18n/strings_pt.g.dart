@@ -363,6 +363,8 @@ class _Translations$settings$pt extends Translations$settings$en {
 	@override String get keyboardShortcutsDescription => 'Personalizar atalhos de teclado';
 	@override String get videoPlayerNavigation => 'Navegação do reprodutor de vídeo';
 	@override String get videoPlayerNavigationDescription => 'Usar as teclas de seta para navegar pelos controles do reprodutor';
+	@override String get showControllerButtonHints => 'Mostrar dicas de botões do controle';
+	@override String get showControllerButtonHintsDescription => 'Exibe os botões do controle na tela depois que você usa um controle';
 	@override String get watchTogetherRelay => 'Servidor de retransmissão do Assistir Juntos';
 	@override String get watchTogetherRelayDescription => 'Definir um servidor de retransmissão personalizado. Todos devem usar o mesmo servidor.';
 	@override String get watchTogetherRelayHint => 'https://minha-retransmissao.exemplo.com.br';
@@ -3287,6 +3289,8 @@ extension on TranslationsPt {
 			'settings.keyboardShortcutsDescription' => 'Personalizar atalhos de teclado',
 			'settings.videoPlayerNavigation' => 'Navegação do reprodutor de vídeo',
 			'settings.videoPlayerNavigationDescription' => 'Usar as teclas de seta para navegar pelos controles do reprodutor',
+			'settings.showControllerButtonHints' => 'Mostrar dicas de botões do controle',
+			'settings.showControllerButtonHintsDescription' => 'Exibe os botões do controle na tela depois que você usa um controle',
 			'settings.watchTogetherRelay' => 'Servidor de retransmissão do Assistir Juntos',
 			'settings.watchTogetherRelayDescription' => 'Definir um servidor de retransmissão personalizado. Todos devem usar o mesmo servidor.',
 			'settings.watchTogetherRelayHint' => 'https://minha-retransmissao.exemplo.com.br',
@@ -3567,10 +3571,10 @@ extension on TranslationsPt {
 			'fileInfo.dynamicRange' => 'Faixa dinâmica',
 			'fileInfo.dolbyVision' => 'Dolby Vision',
 			'fileInfo.dolbyVisionLevel' => 'Nível Dolby Vision',
-			'fileInfo.dolbyVisionVersion' => 'Versão Dolby Vision',
-			'fileInfo.dolbyVisionLayers' => 'Camadas Dolby Vision',
 			_ => null,
 		} ?? switch (path) {
+			'fileInfo.dolbyVisionVersion' => 'Versão Dolby Vision',
+			'fileInfo.dolbyVisionLayers' => 'Camadas Dolby Vision',
 			'fileInfo.baseLayerCompatibility' => 'Compatibilidade da camada base',
 			'fileInfo.avcBitstream' => 'Bitstream AVC',
 			'fileInfo.nalLengthSize' => 'Tamanho do comprimento NAL',
@@ -4081,10 +4085,10 @@ extension on TranslationsPt {
 			'errors.reasonRefused' => 'o servidor recusou a solicitação',
 			'errors.reasonNotFound' => 'o item não está mais no servidor',
 			'errors.reasonServerError' => 'o servidor relatou um erro',
-			'errors.reasonCancelled' => 'a solicitação foi cancelada',
-			'errors.reasonUnexpected' => 'ocorreu um erro inesperado',
 			_ => null,
 		} ?? switch (path) {
+			'errors.reasonCancelled' => 'a solicitação foi cancelada',
+			'errors.reasonUnexpected' => 'ocorreu um erro inesperado',
 			'libraries.title' => 'Bibliotecas',
 			'libraries.fallbackTitle' => 'Biblioteca',
 			'libraries.scanLibraryFiles' => 'Escanear Arquivos da Biblioteca',
@@ -4595,10 +4599,10 @@ extension on TranslationsPt {
 			'watchTogether.participantLeft' => ({required Object name}) => '${name} saiu',
 			'watchTogether.participantPaused' => ({required Object name}) => '${name} pausou',
 			'watchTogether.participantResumed' => ({required Object name}) => '${name} retomou',
-			'watchTogether.participantSeeked' => ({required Object name}) => '${name} mudou a posição da reprodução',
-			'watchTogether.participantChangedSpeed' => ({required Object name, required Object speed}) => '${name} definiu a velocidade para ${speed}',
 			_ => null,
 		} ?? switch (path) {
+			'watchTogether.participantSeeked' => ({required Object name}) => '${name} mudou a posição da reprodução',
+			'watchTogether.participantChangedSpeed' => ({required Object name, required Object speed}) => '${name} definiu a velocidade para ${speed}',
 			'watchTogether.participantBuffering' => ({required Object name}) => '${name} está aguardando o carregamento',
 			'watchTogether.participantNeedsUpdate' => ({required Object name}) => '${name} está usando uma versão mais antiga do app — sincronização indisponível',
 			'watchTogether.resumingWithout' => ({required Object name}) => 'Retomando sem ${name}',
@@ -5109,10 +5113,10 @@ extension on TranslationsPt {
 			'addServer.pinExpired' => 'O PIN expirou antes de entrar. Tente novamente.',
 			'addServer.failedToRegisterAccount' => ({required Object error}) => 'Falha ao registrar a conta: ${error}',
 			'addServer.enterMediaBrowserUrlError' => ({required Object product}) => 'Digite a URL do seu servidor ${product}',
-			'addServer.addConnectionTitle' => 'Adicionar conexão',
-			'addServer.addConnectionTitleScoped' => ({required Object name}) => 'Adicionar a ${name}',
 			_ => null,
 		} ?? switch (path) {
+			'addServer.addConnectionTitle' => 'Adicionar conexão',
+			'addServer.addConnectionTitleScoped' => ({required Object name}) => 'Adicionar a ${name}',
 			'addServer.signInWithPlexCard' => 'Entrar com Plex',
 			'addServer.signInWithPlexCardSubtitle' => 'Autorize este dispositivo. Servidores compartilhados são adicionados.',
 			'addServer.signInWithPlexCardSubtitleScoped' => 'Autorize uma conta Plex. Os usuários do Plex Home se tornam perfis.',
