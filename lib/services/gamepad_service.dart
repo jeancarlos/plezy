@@ -248,16 +248,6 @@ class GamepadService with WindowListener {
     return false;
   }
 
-  /// Dispatches an axis event to the active context handler, or returns false if no handler claims it.
-  static bool _dispatchContextAxis(GamepadAxis axis, double value) {
-    for (final handler in _gamepadContextHandlers.values) {
-      if (!handler.isActive()) continue;
-      handler.onAxis?.call(axis, value);
-      return true;
-    }
-    return false;
-  }
-
   @visibleForTesting
   static void debugClearGamepadContextHandlers() {
     _gamepadContextHandlers.clear();
