@@ -168,6 +168,130 @@ void main() {
 
     expect(FocusManager.instance.highlightStrategy, FocusHighlightStrategy.automatic);
   });
+
+  testWidgets('input source starts as pointer', (tester) async {
+    await tester.pumpWidget(
+      InputModeTracker(
+        child: Directionality(textDirection: TextDirection.ltr, child: const SizedBox.shrink()),
+      ),
+    );
+
+    expect(InputModeTracker.currentSource, InputSource.pointer);
+  });
+
+  testWidgets('reportGamepadInput sets source to gamepad', (tester) async {
+    late InputSource observed;
+
+    await tester.pumpWidget(
+      InputModeTracker(
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: ValueListenableBuilder<InputSource>(
+            valueListenable: InputModeTracker.sourceListenable,
+            builder: (context, source, _) {
+              observed = source;
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(observed, InputSource.pointer);
+
+    InputModeTracker.reportGamepadInput();
+    await tester.pump();
+
+    expect(observed, InputSource.gamepad);
+    expect(InputModeTracker.currentSource, InputSource.gamepad);
+  });
+
+  testWidgets('reportNonPointerInput from other devices sets source to keyboard, not gamepad', (tester) async {
+    late InputSource observed;
+
+    await tester.pumpWidget(
+      InputModeTracker(
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: ValueListenableBuilder<InputSource>(
+            valueListenable: InputModeTracker.sourceListenable,
+            builder: (context, source, _) {
+              observed = source;
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ),
+    );
+
+    InputModeTracker.reportNonPointerInput();
+    await tester.pump();
+
+    expect(observed, InputSource.keyboard);
+    expect(InputModeTracker.currentSource, InputSource.keyboard);
+  });
+
+  testWidgets('pointer events set source to pointer', (tester) async {
+    late InputSource observed;
+
+    await tester.pumpWidget(
+      InputModeTracker(
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {},
+            child: ValueListenableBuilder<InputSource>(
+              valueListenable: InputModeTracker.sourceListenable,
+              builder: (context, source, _) {
+                observed = source;
+                return const SizedBox(width: 100, height: 100);
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+
+    InputModeTracker.reportGamepadInput();
+    await tester.pump();
+    expect(observed, InputSource.gamepad);
+
+    await tester.tap(find.byType(GestureDetector));
+    await tester.pump();
+
+    expect(observed, InputSource.pointer);
+    expect(InputModeTracker.currentSource, InputSource.pointer);
+  });
+
+  testWidgets('keyboard navigation events set source to keyboard', (tester) async {
+    late InputSource observed;
+
+    await tester.pumpWidget(
+      InputModeTracker(
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: ValueListenableBuilder<InputSource>(
+            valueListenable: InputModeTracker.sourceListenable,
+            builder: (context, source, _) {
+              observed = source;
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      ),
+    );
+
+    InputModeTracker.reportGamepadInput();
+    await tester.pump();
+    expect(observed, InputSource.gamepad);
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump();
+
+    expect(observed, InputSource.keyboard);
+    expect(InputModeTracker.currentSource, InputSource.keyboard);
+  });
 }
 
 /// Pumps a tracker, sends [key], and reports the mode the tree observes.

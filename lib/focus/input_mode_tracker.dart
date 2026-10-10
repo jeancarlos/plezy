@@ -1,11 +1,15 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../utils/platform_detector.dart';
 import 'dpad_navigator.dart';
 import 'focus_navigation_intent.dart';
+
+/// Physical input device that generated the current interaction.
+enum InputSource { keyboard, pointer, gamepad }
 
 /// Tracks whether the user is navigating via keyboard/d-pad or pointer (mouse/touch).
 ///
@@ -80,18 +84,42 @@ class InputModeTracker extends StatefulWidget {
     if (state != null && state.mounted) state._setMode(InputMode.keyboard);
   }
 
+  /// Report accepted gamepad input (ACCEPTED press or navigating left-stick deflection).
+  /// Sets input source to gamepad while keeping input mode as keyboard.
+  /// A no-op when no tracker is mounted.
+  static void reportGamepadInput() {
+    final state = _instance;
+    if (state != null && state.mounted) state._setSource(InputSource.gamepad);
+  }
+
+  /// Get the current input source, readable without a [BuildContext].
+  static InputSource get currentSource => _instance?._source ?? InputSource.pointer;
+
+  /// Live input source as a [ValueListenable] for widgets to listen to.
+  static ValueListenable<InputSource> get sourceListenable {
+    return _instance?._sourceNotifier ?? _defaultSourceNotifier;
+  }
+
   static _InputModeTrackerState? _instance;
+  static final ValueNotifier<InputSource> _defaultSourceNotifier = ValueNotifier<InputSource>(InputSource.pointer);
 
   @override
   State<InputModeTracker> createState() => _InputModeTrackerState();
 }
 
 class _InputModeTrackerState extends State<InputModeTracker> {
-  InputMode _mode = InputModeTracker._defaultMode;
+  late InputMode _mode;
+  late InputSource _source;
+  late ValueNotifier<InputSource> _sourceNotifier;
 
   @override
   void initState() {
     super.initState();
+    _mode = InputModeTracker._defaultMode;
+    _source = InputSource.pointer;
+    _sourceNotifier = ValueNotifier<InputSource>(_source);
+    InputModeTracker._defaultSourceNotifier.value = _source;
+
     // Published before anything can report input. The outgoing tracker of a
     // subtree swap disposes *after* the incoming one initialises, so teardown
     // is identity-guarded — otherwise startup's bootstrap→app swap would leave
@@ -105,6 +133,7 @@ class _InputModeTrackerState extends State<InputModeTracker> {
   void dispose() {
     HardwareKeyboard.instance.removeHandler(_handleKeyEvent);
     if (identical(InputModeTracker._instance, this)) InputModeTracker._instance = null;
+    _sourceNotifier.dispose();
     super.dispose();
   }
 
@@ -128,6 +157,22 @@ class _InputModeTrackerState extends State<InputModeTracker> {
       setState(() => _mode = mode);
     }
     _updateFocusHighlightStrategy(mode);
+
+    // When mode changes to keyboard via hardware keys, source is keyboard.
+    // When mode changes to pointer, source is pointer.
+    if (mode == InputMode.keyboard) {
+      _setSource(InputSource.keyboard);
+    } else if (mode == InputMode.pointer) {
+      _setSource(InputSource.pointer);
+    }
+  }
+
+  void _setSource(InputSource source) {
+    if (_source != source) {
+      _source = source;
+      _sourceNotifier.value = source;
+      InputModeTracker._defaultSourceNotifier.value = source;
+    }
   }
 
   // Keep Material focus highlights in sync with our input mode so keyboard/gamepad
@@ -151,8 +196,14 @@ class _InputModeTrackerState extends State<InputModeTracker> {
     }
 
     return Listener(
-      onPointerDown: (_) => _setMode(InputMode.pointer),
-      onPointerHover: (_) => _setMode(InputMode.pointer),
+      onPointerDown: (_) {
+        _setMode(InputMode.pointer);
+        _setSource(InputSource.pointer);
+      },
+      onPointerHover: (_) {
+        _setMode(InputMode.pointer);
+        _setSource(InputSource.pointer);
+      },
       behavior: HitTestBehavior.translucent,
       child: Stack(
         alignment: Alignment.topLeft,
