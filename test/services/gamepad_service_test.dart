@@ -71,6 +71,86 @@ void main() {
     service.debugHandleGamepadEvent(_axis(GamepadAxis.leftStickY, 0.0));
     await tester.pump();
   });
+
+  testWidgets('D-pad and stick releases do not stop each other\'s repeat (D2: repeat ownership)', (tester) async {
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+
+    // Press dpadRight and let it repeat
+    service.debugHandleGamepadEvent(_button(GamepadButton.dpadRight, pressed: true));
+    await tester.pump();
+    expect(_downCount(events, LogicalKeyboardKey.arrowRight), 1);
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 80));
+    await tester.pump();
+    final rightsBeforeDpadDown = _downCount(events, LogicalKeyboardKey.arrowRight);
+    expect(rightsBeforeDpadDown, greaterThan(1));
+
+    // Press dpadDown (starts a new repeat)
+    service.debugHandleGamepadEvent(_button(GamepadButton.dpadDown, pressed: true));
+    await tester.pump();
+    expect(_downCount(events, LogicalKeyboardKey.arrowDown), 1);
+
+    // Release dpadRight (should NOT stop the dpadDown repeat)
+    service.debugHandleGamepadEvent(_button(GamepadButton.dpadRight, pressed: false));
+    await tester.pump();
+
+    // dpadDown should still be repeating
+    final downsBeforePump = _downCount(events, LogicalKeyboardKey.arrowDown);
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 80));
+    await tester.pump();
+    final downsAfterPump = _downCount(events, LogicalKeyboardKey.arrowDown);
+    expect(
+      downsAfterPump,
+      greaterThan(downsBeforePump),
+      reason: 'dpadDown should keep repeating after releasing dpadRight',
+    );
+
+    // Clean up the held button to stop the repeat
+    service.debugHandleGamepadEvent(_button(GamepadButton.dpadDown, pressed: false));
+    await tester.pump();
+  });
+
+  testWidgets('stick re-centre does not stop different stick direction repeat', (tester) async {
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+
+    // Latch leftStickY down and let it repeat
+    service.debugHandleGamepadEvent(_axis(GamepadAxis.leftStickY, 1.0));
+    await tester.pump();
+    expect(_downCount(events, LogicalKeyboardKey.arrowDown), 1);
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 80));
+    await tester.pump();
+    final downsBeforeDpadRight = _downCount(events, LogicalKeyboardKey.arrowDown);
+    expect(downsBeforeDpadRight, greaterThan(1));
+
+    // Press dpadRight (starts a new repeat, stops the stick repeat with current code)
+    service.debugHandleGamepadEvent(_button(GamepadButton.dpadRight, pressed: true));
+    await tester.pump();
+    expect(_downCount(events, LogicalKeyboardKey.arrowRight), 1);
+
+    // Re-centre the stick (should NOT stop dpadRight repeat)
+    service.debugHandleGamepadEvent(_axis(GamepadAxis.leftStickY, 0.0));
+    await tester.pump();
+
+    // dpadRight should still be repeating
+    final rightsBeforePump = _downCount(events, LogicalKeyboardKey.arrowRight);
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 80));
+    await tester.pump();
+    final rightsAfterPump = _downCount(events, LogicalKeyboardKey.arrowRight);
+    expect(
+      rightsAfterPump,
+      greaterThan(rightsBeforePump),
+      reason: 'dpadRight should keep repeating after stick re-centres',
+    );
+
+    // Clean up the held button to stop the repeat
+    service.debugHandleGamepadEvent(_button(GamepadButton.dpadRight, pressed: false));
+    await tester.pump();
+  });
 }
 
 GamepadButtonEvent _button(GamepadButton button, {required bool pressed}) {

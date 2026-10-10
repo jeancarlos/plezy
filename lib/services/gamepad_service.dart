@@ -218,6 +218,11 @@ class GamepadService with WindowListener {
   TraversalDirection? _leftStickYLatch;
   TraversalDirection? _leftStickXLatch;
 
+  /// Tracks which GamepadButton or GamepadAxis owns the current repeat, so that
+  /// releasing an unrelated button or re-centering an unrelated axis does not
+  /// stop a repeat started by another input.
+  Object? _repeatOwner;
+
   final Set<GamepadButton> _pressedButtons = {};
   final Set<GamepadButton> _suppressedButtons = {};
   bool _windowFocused = true;
@@ -315,7 +320,7 @@ class GamepadService with WindowListener {
   /// disconnecting (or the window blurring) clears held state for all
   /// controllers.
   void _releaseHeldInputState() {
-    _stopDirectionRepeat();
+    _stopDirectionRepeat(force: true);
 
     // Release all face buttons in one frame so held widget state cannot stick.
     _simulator.releaseKeys([
@@ -355,7 +360,7 @@ class GamepadService with WindowListener {
       if (TextInputDiagnostics.enabled) {
         _logGamepadDiag('native text input focused; clearing repeat/buttons/duplicate guard before pause');
       }
-      _stopDirectionRepeat();
+      _stopDirectionRepeat(force: true);
       _pressedButtons.clear();
       _suppressedButtons.clear();
       _keyEventSimulator?.clearHeldKeys();
@@ -454,7 +459,7 @@ class GamepadService with WindowListener {
         if (TextInputDiagnostics.enabled) {
           _logGamepadDiag('button starts direction repeat ${direction.name} ${_describeGamepadButton(event)}');
         }
-        _startDirectionRepeat(direction);
+        _startDirectionRepeat(direction, event.button);
         return;
       }
 
@@ -493,7 +498,7 @@ class GamepadService with WindowListener {
         return;
       }
 
-      // D-pad release — stop repeat
+      // D-pad release — stop repeat if this button owns it
       switch (event.button) {
         case GamepadButton.dpadUp:
         case GamepadButton.dpadDown:
@@ -502,7 +507,7 @@ class GamepadService with WindowListener {
           if (TextInputDiagnostics.enabled) {
             _logGamepadDiag('button stops direction repeat ${_describeGamepadButton(event)}');
           }
-          _stopDirectionRepeat();
+          _stopDirectionRepeat(owner: event.button);
         // Face button release — send KeyUp
         case GamepadButton.a:
           if (TextInputDiagnostics.enabled) {
@@ -554,6 +559,7 @@ class GamepadService with WindowListener {
         _leftStickYLatch = _latchStickAxis(
           event.value,
           _leftStickYLatch,
+          axis: GamepadAxis.leftStickY,
           negative: TraversalDirection.up,
           positive: TraversalDirection.down,
         );
@@ -561,6 +567,7 @@ class GamepadService with WindowListener {
         _leftStickXLatch = _latchStickAxis(
           event.value,
           _leftStickXLatch,
+          axis: GamepadAxis.leftStickX,
           negative: TraversalDirection.left,
           positive: TraversalDirection.right,
         );
@@ -570,9 +577,12 @@ class GamepadService with WindowListener {
   }
 
   /// Fire [direction] immediately, then auto-repeat after an initial delay.
-  void _startDirectionRepeat(TraversalDirection direction) {
-    if (TextInputDiagnostics.enabled) _logGamepadDiag('startDirectionRepeat direction=$direction');
-    _stopDirectionRepeat();
+  /// The [owner] parameter identifies which button or axis started this repeat,
+  /// so that releasing an unrelated input does not stop it.
+  void _startDirectionRepeat(TraversalDirection direction, Object owner) {
+    if (TextInputDiagnostics.enabled) _logGamepadDiag('startDirectionRepeat direction=$direction owner=$owner');
+    _stopDirectionRepeat(force: true);
+    _repeatOwner = owner;
     final logicalKey = _syntheticKeyByDirection[direction]!;
     if (TextInputDiagnostics.enabled) {
       _logGamepadDiag(
@@ -582,32 +592,41 @@ class GamepadService with WindowListener {
     _simulator.startKeyRepeat(logicalKey, initialDelay: _repeatInitialDelay, interval: _repeatInterval);
   }
 
-  void _stopDirectionRepeat() {
-    if (_keyEventSimulator?.isRepeating ?? false) {
-      if (TextInputDiagnostics.enabled) _logGamepadDiag('stopDirectionRepeat');
+  /// Stops direction repeat if no owner is specified, or if the [owner] matches
+  /// the current repeat owner. Set [force] to true to stop regardless of owner.
+  void _stopDirectionRepeat({Object? owner, bool force = false}) {
+    if (force || owner == null || owner == _repeatOwner) {
+      if (_keyEventSimulator?.isRepeating ?? false) {
+        if (TextInputDiagnostics.enabled) {
+          _logGamepadDiag('stopDirectionRepeat force=$force owner=$owner repeatOwner=$_repeatOwner');
+        }
+      }
+      _keyEventSimulator?.stopKeyRepeat();
+      _repeatOwner = null;
     }
-    _keyEventSimulator?.stopKeyRepeat();
   }
 
   /// Latches one stick axis to the direction it is deflected past the
   /// deadzone. A fresh deflection starts the repeat, holding it past the
   /// deadzone is ignored so the repeat is not restarted, and re-centring stops
-  /// it. Returns the axis's new latch; [held] is its previous one.
+  /// it only if this axis owns the repeat. Returns the axis's new latch;
+  /// [held] is its previous one.
   TraversalDirection? _latchStickAxis(
     double value,
     TraversalDirection? held, {
+    required GamepadAxis axis,
     required TraversalDirection negative,
     required TraversalDirection positive,
   }) {
     if (value > _stickDeadzone) {
-      if (held != positive) _startDirectionRepeat(positive);
+      if (held != positive) _startDirectionRepeat(positive, axis);
       return positive;
     }
     if (value < -_stickDeadzone) {
-      if (held != negative) _startDirectionRepeat(negative);
+      if (held != negative) _startDirectionRepeat(negative, axis);
       return negative;
     }
-    if (held != null) _stopDirectionRepeat();
+    if (held != null) _stopDirectionRepeat(owner: axis);
     return null;
   }
 }
