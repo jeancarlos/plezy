@@ -500,6 +500,69 @@ void main() {
     GamepadService.unregisterGamepadContext('mainscreen');
     GamepadService.debugClearGamepadContextHandlers();
   });
+
+  testWidgets('Y outside context emits contextMenu KeyDown and KeyUp', (tester) async {
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.y, pressed: true));
+    await tester.pump();
+
+    expect(_downCount(events, LogicalKeyboardKey.contextMenu), 1);
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.y, pressed: false));
+    await tester.pump();
+
+    expect(_upCount(events, LogicalKeyboardKey.contextMenu), 1);
+  });
+
+  testWidgets('Y inside active context does not emit contextMenu', (tester) async {
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+
+    GamepadService.registerGamepadContext(
+      'player',
+      onButton: (button) {
+        if (button == GamepadButton.y) {
+          return true;
+        }
+        return false;
+      },
+      isActive: () => true,
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.y, pressed: true));
+    await tester.pump();
+
+    expect(
+      _downCount(events, LogicalKeyboardKey.contextMenu),
+      0,
+      reason: 'contextMenu should not be emitted when context handles Y',
+    );
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.y, pressed: false));
+    await tester.pump();
+
+    expect(_upCount(events, LogicalKeyboardKey.contextMenu), 0);
+
+    GamepadService.unregisterGamepadContext('player');
+    GamepadService.debugClearGamepadContextHandlers();
+  });
+
+  testWidgets('Guide press/release emits no key events and does not promote input mode', (tester) async {
+    final events = await _pumpKeyEventRecorder(tester);
+    final service = GamepadService.forTesting(duplicateInputGuard: GamepadDuplicateInputGuard(enabled: () => false));
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.guide, pressed: true));
+    await tester.pump();
+
+    expect(events, isEmpty, reason: 'Guide press should emit no key events');
+
+    service.debugHandleGamepadEvent(_button(GamepadButton.guide, pressed: false));
+    await tester.pump();
+
+    expect(events, isEmpty, reason: 'Guide release should emit no key events');
+  });
 }
 
 GamepadButtonEvent _button(GamepadButton button, {required bool pressed}) {
